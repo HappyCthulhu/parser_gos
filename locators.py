@@ -3,7 +3,7 @@ class MainPageLocators:
     text_links = '//div[@class="registry-entry__header-mid__number"]/a/@href'
     text_status = '//div[@class="registry-entry__header-mid__title text-normal"]/text()'
     button_next_page = '//a[@class="paginator-button paginator-button-next"]'
-    text_pages_number = '//span[@class="link-text"]'
+    text_pages_number = '//span[@class="link-text"]/text()'
 
 
 # pageNumber = 150
