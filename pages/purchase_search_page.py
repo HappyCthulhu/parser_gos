@@ -4,10 +4,13 @@ from lxml import html
 from locators import MainPageLocators
 
 
-class MainPage:
+class PurchaseSearchPage:
     def __init__(self):
         self.link = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html'
 
+    def find_number_of_pages(self):
+        pages_count = self.tree.xpath(MainPageLocators.text_pages_number)[-1]
+        return pages_count
 
     def get_tree(self):
         html_text = requests.get(self.link).text
@@ -29,4 +32,3 @@ class MainPage:
         purchase_obj = html.document_fromstring(purchase_tree)
         link = (f'https://zakupki.gov.ru{purchase_obj.xpath(MainPageLocators.text_links)[0]}')
         return link
-
