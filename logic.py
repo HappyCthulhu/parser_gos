@@ -35,13 +35,14 @@ if __name__ == '__main__':
 
             status = main_page.get_status(purchase)
 
+            # TODO: удалить логику по статусу
             if status not in required_statuses:
                 logger.debug(f'Этот статус не совпадает с нужными нам: {status}')
                 continue
 
             link = main_page.get_link_to_purchases(purchase)
             page = PurchasePage(link)
-            page.parse_page()
+            page.get_page_elements()
             purchases_count += 1
             bar.next()
     bar.finish()
