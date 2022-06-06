@@ -3,6 +3,7 @@ from lxml import html
 
 from locators import MainPageLocators
 
+# TODO: переименовать в purchase_search
 
 class PurchaseSearchPage:
     def __init__(self, link):
@@ -15,11 +16,17 @@ class PurchaseSearchPage:
         return pages_count
 
     def get_tree(self):
-        html_text = requests.get(self.link).text
-        return html.document_fromstring(html_text)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+        }
+
+        self.response = requests.get(self.link, headers=headers)
+        return html.document_fromstring(self.response.text)
 
     def get_purchases(self):
-        return self.tree.xpath(MainPageLocators.divs_purchases)
+        # TODO: проверить, присваивается ли объект в переменные класса без return
+        purchases =  self.tree.xpath(MainPageLocators.divs_purchases)
+        return purchases
 
     def get_status(self, purchase):
         #  TODO: функция, которая html возвращает
@@ -32,5 +39,5 @@ class PurchaseSearchPage:
         # TODO: может некостыльный метод есть?
         purchase_tree = html.tostring(purchase)
         purchase_obj = html.document_fromstring(purchase_tree)
-        link = (f'https://zakupki.gov.ru{purchase_obj.xpath(MainPageLocators.text_links)[0]}')
+        link = f'https://zakupki.gov.ru{purchase_obj.xpath(MainPageLocators.text_links)[0]}'
         return link
