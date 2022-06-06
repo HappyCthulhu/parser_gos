@@ -25,9 +25,10 @@ class PurchaseSearchPage:
 
     def get_purchases(self):
         # TODO: проверить, присваивается ли объект в переменные класса без return
-        purchases =  self.tree.xpath(MainPageLocators.divs_purchases)
-        return purchases
+        return self.tree.xpath(MainPageLocators.divs_purchases)
 
+    # TODO: создать BasePage и переместить общие методы (типа преобразования в tostring и обратно) туда
+    # TODO: вообще подумать, можно ли иначе сделать (без костылей преобразования туда и обратно)
     def get_status(self, purchase):
         #  TODO: функция, которая html возвращает
         purchase_tree = html.tostring(purchase)
