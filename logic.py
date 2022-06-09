@@ -2,6 +2,7 @@ import sys
 
 from progress.bar import Bar
 
+from export import Export
 from logger_settings import logger
 from pages.purchase import PurchasePage
 from pages.purchase_search_page import PurchaseSearchPage
@@ -20,6 +21,8 @@ if __name__ == '__main__':
     logger.info(f'Количество страниц: {number_of_pages}')
     logger.info(f'Закупок на одну страницу: {number_of_purchases_per_page}')
 
+    export = Export()
+
     bar = Bar('Страниц обработано:', max=len(page_numbers) * number_of_purchases_per_page)
     for page_number in page_numbers:
 
@@ -36,13 +39,18 @@ if __name__ == '__main__':
             status = main_page.get_status(purchase)
 
             # TODO: удалить логику по статусу
-            if status not in required_statuses:
-                logger.debug(f'Этот статус не совпадает с нужными нам: {status}')
-                continue
+            # if status not in required_statuses:
+            #     logger.debug(f'Этот статус не совпадает с нужными нам: {status}')
+            #     continue
 
             link = main_page.get_link_to_purchases(purchase)
-            page = PurchasePage(link)
-            page.get_page_elements()
+            purchase_page = PurchasePage(link, status)
+            purchase_page.get_page_elements()
             purchases_count += 1
+
+            export.dump_data(purchases_count, purchase_page)
+
+
+
             bar.next()
     bar.finish()
