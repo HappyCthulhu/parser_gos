@@ -7,7 +7,8 @@ from logger_settings import logger
 
 class PurchasePage:
     def __init__(self, link, status):
-        self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
+        # self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
+        self.link = link
         self.status = status
         self.tree = self.get_tree()
         self.element = HtmlElement(self.tree)
@@ -81,15 +82,17 @@ class HtmlElement():
                     }
                 )
 
-    def check_element_existing(self, xpath):
-        print(self.tree.xpath(xpath))
-        print(self.tree.xpath(xpath))
-        print(self.tree.xpath(xpath))
-        print(self.tree.xpath(xpath))
-        if len(self.tree.xpath(xpath)) == 0:
-            return False
+    def check_element_existing(self, xpath, tree=None):
+        if tree == 'ktru':
+            if len(self.ktru_block_tree.xpath(xpath)) == 0:
+                return False
+            else:
+                return True
         else:
-            return True
+            if len(self.tree.xpath(xpath)) == 0:
+                return False
+            else:
+                return True
 
     def get_purchase_number(self, link):
         self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
@@ -126,22 +129,22 @@ class HtmlElement():
             return self.tree.xpath(PurchasePageLocators.text_date_and_time_of_the_application_deadline)[0].lstrip().rstrip()
 
     def get_ktru_blocks(self):
-        return self.tree.xpath(PurchasePageLocators.block_ktru)
+        return self.tree.xpath(PurchasePageLocators.block_ktru, tree='ktru')
 
     def get_ktru_position_code(self):
-        if not self.check_element_existing(PurchasePageLocators.text_ktru_position_code):
+        if not self.check_element_existing(PurchasePageLocators.text_ktru_position_code, tree='ktru'):
             return ''
         else:
             return self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_position_code)[0].lstrip().rstrip()
 
     def get_ktru_name_of_product_or_service(self):
-        if not self.check_element_existing(PurchasePageLocators.text_ktru_name_of_product_or_service):
+        if not self.check_element_existing(PurchasePageLocators.text_ktru_name_of_product_or_service, tree='ktru'):
             return ''
         else:
             return self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_name_of_product_or_service)[0].lstrip().rstrip()
 
     def get_ktru_count(self):
-        if not self.check_element_existing(PurchasePageLocators.text_ktru_count):
+        if not self.check_element_existing(PurchasePageLocators.text_ktru_count, tree='ktru'):
             return ''
         else:
             return self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_count)[0].lstrip().rstrip()
