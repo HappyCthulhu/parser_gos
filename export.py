@@ -1,26 +1,27 @@
 from datetime import datetime
 from pathlib import Path
 
-from openpyxl import load_workbook, Workbook
+from openpyxl import Workbook
 
 
 class Export:
     def __init__(self):
         Path('result data').mkdir(parents=True, exist_ok=True)
-        f_name = self.create_file()
+        self.f_name = self.create_file()
         self.wb = Workbook()
         ws = self.wb.active
         ws.title = "Sheet 1"
-        self.wb.save(filename=Path('result data', f_name))
-        self.create_titles(f_name)
+        self.wb.save(filename=Path('result data', self.f_name))
+        self.create_titles()
 
     def create_file(self):
         f_name = f'result-{datetime.now().strftime("%d-%m-%Y_%H-%M-%S")}.xlsx'
         return f_name
 
-    def create_titles(self, f_name):
+    def create_titles(self):
         sheet = self.wb['Sheet 1']
         sheet[f'A2'].value = '№ номер'
+        sheet.column_dimensions['A'].width = 40
         sheet[f'B2'].value = '№ аукциона'
         sheet[f'C2'].value = 'Статус контракта'
         sheet[f'D2'].value = 'Начало подачи заявок'
@@ -47,7 +48,39 @@ class Export:
         sheet[f'Y2'].value = 'Файлы'
         sheet[f'Z2'].value = 'Упоминание'
 
-        self.wb.save(filename=Path('result data', f_name))
+        self.wb.save(filename=Path('result data', self.f_name))
 
 
-export = Export()
+    def dump_data(self, count, purchase_page):
+        row = count + 2
+        sheet = self.wb['Sheet 1']
+        # sheet[f'A{row}'].value = purchase_page.
+        sheet[f'B{row}'].value = f'№ {purchase_page.purchase_number}'
+        sheet[f'C{row}'].value = purchase_page.status
+        sheet[f'D{row}'].value = purchase_page.date_and_time_of_the_application_beginning
+        sheet[f'E{row}'].value = purchase_page.date_and_time_of_the_application_deadline
+        sheet[f'F{row}'].value = purchase_page.date_of_the_procedure_for_submitting_proposals
+        # sheet[f'G{row}'].value = purchase_page.
+        # sheet[f'H{row}'].value = purchase_page.
+        sheet[f'I{row}'].value = purchase_page.customer
+        # sheet[f'J{row}'].value = purchase_page.
+        # sheet[f'K{row}'].value = purchase_page.
+        # sheet[f'L{row}'].value = purchase_page.
+        # sheet[f'M{row}'].value = purchase_page.
+        # sheet[f'N{row}'].value = purchase_page.
+        # sheet[f'O{row}'].value = purchase_page.
+        sheet[f'P{row}'].value = purchase_page.ktru_sum_cost
+        # sheet[f'Q{row}'].value = purchase_page.
+        # sheet[f'R{row}'].value = purchase_page.
+        # sheet[f'S{row}'].value = purchase_page.
+        # sheet[f'T{row}'].value = purchase_page.
+        # sheet[f'U{row}'].value = purchase_page.
+        # sheet[f'V{row}'].value = purchase_page.
+        # sheet[f'W{row}'].value = purchase_page.
+        # sheet[f'X{row}'].value = purchase_page.
+        # sheet[f'Y{row}'].value = purchase_page.
+        # sheet[f'Z{row}'].value = purchase_page.
+
+        self.wb.save(filename=Path('result data', self.f_name))
+#
+# export = Export()
