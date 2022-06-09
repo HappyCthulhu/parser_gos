@@ -12,7 +12,7 @@ class MainPageLocators:
 class PurchasePageLocators:
     # text_purchase_number = '//div[@class="registry-entry__header-mid__number"]/a/text()'
     text_address = '//*[contains(text(),"Место нахождения")]/following::*[1]/text()'
-    text_customer = '//*[contains(text(),"Заказчик")]/following::*/a/text()'
+    text_customer = '//*[normalize-space(text()) = "Заказчик"]/following::*[1]/a/text()'
     text_starting_price = '//*[contains(text(),"Начальная цена")]/following::*[1]/text()'
     # оператор AND приделать внутри Xpath.
     # Ибо сейчас он ищет только по слову "начала",
