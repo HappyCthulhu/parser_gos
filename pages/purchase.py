@@ -6,9 +6,9 @@ from logger_settings import logger
 
 
 class PurchasePage:
-    def __init__(self, link):
+    def __init__(self, link, status):
         self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
-        # self.link = link
+        self.status = status
         self.tree = self.get_tree()
         self.element = HtmlElement(self.tree)
 
@@ -63,17 +63,17 @@ class HtmlElement():
         return ktru_tree
 
     def process_ktru_blocks(self):
-        ktru_blocks = self.get_ktru_blocks()
+        ktru_blocks_html = self.get_ktru_blocks()
         self.ktru_blocks = []
 
-        if len(ktru_blocks) != 0:
-            for block in ktru_blocks:
+        if len(ktru_blocks_html) != 0:
+            for block in ktru_blocks_html:
                 self.ktru_block_tree = self.get_ktru_block(block)
                 ktru_position_code = self.get_ktru_position_code()
                 ktru_name_of_product_or_service = self.get_ktru_name_of_product_or_service()
                 ktru_count = self.get_ktru_count()
 
-                ktru_blocks.append(
+                self.ktru_blocks.append(
                     {
                         'ktru_position_code': ktru_position_code,
                         'ktru_name_of_product_or_service': ktru_name_of_product_or_service,
@@ -82,6 +82,10 @@ class HtmlElement():
                 )
 
     def check_element_existing(self, xpath):
+        print(self.tree.xpath(xpath))
+        print(self.tree.xpath(xpath))
+        print(self.tree.xpath(xpath))
+        print(self.tree.xpath(xpath))
         if len(self.tree.xpath(xpath)) == 0:
             return False
         else:
@@ -93,7 +97,7 @@ class HtmlElement():
         return str(link.split('=')[1])
 
     def get_customer(self):
-        return self.tree.xpath(PurchasePageLocators.text_customer)
+        return self.tree.xpath(PurchasePageLocators.text_customer)[0].lstrip().rstrip()
 
     def get_starting_price(self):
         if not self.check_element_existing(PurchasePageLocators.text_starting_price):
@@ -146,4 +150,6 @@ class HtmlElement():
         if not self.check_element_existing(PurchasePageLocators.text_ktru_sum_cost):
             return ''
         else:
-            return self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_sum_cost)[0].lstrip().rstrip()
+            return self.tree.xpath(PurchasePageLocators.text_ktru_sum_cost)[0].lstrip().rstrip()
+
+    # def get_status(self):
