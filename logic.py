@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
             purchases_count += 1
 
-            export.dump_data(purchases_count, purchase_page)
+            export.dump_data(purchase_page)
 
             bar.next()
     bar.finish()
