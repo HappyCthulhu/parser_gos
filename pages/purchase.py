@@ -3,11 +3,13 @@ from lxml import html
 
 from locators import PurchasePageLocators
 from logger_settings import logger
+from pages.purchase_supplier_results import PurchaseSupplierResults
 
 
 class PurchasePage:
     def __init__(self, link, status):
         # self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
+        # TODO: он дважды обрабатывает одну и ту же страницу. Выяснить, почему
         self.link = link
         self.status = status
         self.tree = self.get_tree()
@@ -28,29 +30,14 @@ class PurchasePage:
     def get_page_elements(self):
         self.purchase_number = self.element.get_purchase_number(self.link)
         self.customer = self.element.get_customer()
+        self.region = self.element.get_region()
         self.starting_price = self.element.get_starting_price()
         self.date_and_time_of_the_application_beginning = self.element.get_date_and_time_of_the_application_beginning()
         self.date_and_time_of_the_application_deadline = self.element.get_date_and_time_of_the_application_deadline()
         self.date_of_the_procedure_for_submitting_proposals = self.element.get_date_of_the_procedure_for_submitting_proposals()
         self.ktru_block = self.element.process_ktru_blocks()
         self.ktru_sum_cost = self.element.get_ktru_sum_cost()
-
-        print()
-        # self.purchase = {
-        #     'purchase_number': purchase_number,
-        #     'customer': customer,
-        #     'starting_price': starting_price,
-        #     'date_and_time_of_the_application_beginning': date_and_time_of_the_application_beginning,
-        #     'date_and_time_of_the_application_deadline': date_and_time_of_the_application_deadline,
-        #     'date_of_the_procedure_for_submitting_proposals': date_of_the_procedure_for_submitting_proposals,
-        #     'block_ktru': block_ktru,
-        #     'code': ktru_position_code,
-        #     'ktru_name_of_product_or_service': ktru_name_of_product_or_service,
-        #     'ktru_count': ktru_count,
-        #     'sum_cost': ktru_sum_cost
-        # }
-
-        # logger.debug(purchase)
+        self.purchase_supplier_results = self.element.get_purchase_supplier_results()
 
 
 class HtmlElement():
@@ -58,7 +45,6 @@ class HtmlElement():
         self.tree = tree
 
     def get_ktru_block(self, block):
-        #  TODO: функция, которая html возвращает
         block_html = html.tostring(block)
         ktru_tree = html.document_fromstring(block_html)
         return ktru_tree
@@ -88,6 +74,7 @@ class HtmlElement():
                 return False
             else:
                 return True
+
         else:
             if len(self.tree.xpath(xpath)) == 0:
                 return False
@@ -131,10 +118,11 @@ class HtmlElement():
         if not self.check_element_existing(PurchasePageLocators.text_date_and_time_of_the_application_deadline):
             return ''
         else:
-            return self.tree.xpath(PurchasePageLocators.text_date_and_time_of_the_application_deadline)[0].lstrip().rstrip()
+            return self.tree.xpath(PurchasePageLocators.text_date_and_time_of_the_application_deadline)[
+                0].lstrip().rstrip()
 
     def get_ktru_blocks(self):
-        return self.tree.xpath(PurchasePageLocators.block_ktru, tree='ktru')
+        return self.tree.xpath(PurchasePageLocators.blocks_ktru, tree='ktru')
 
     def get_ktru_position_code(self):
         if not self.check_element_existing(PurchasePageLocators.text_ktru_position_code, tree='ktru'):
@@ -146,7 +134,8 @@ class HtmlElement():
         if not self.check_element_existing(PurchasePageLocators.text_ktru_name_of_product_or_service, tree='ktru'):
             return ''
         else:
-            return self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_name_of_product_or_service)[0].lstrip().rstrip()
+            return self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_name_of_product_or_service)[
+                0].lstrip().rstrip()
 
     def get_ktru_count(self):
         if not self.check_element_existing(PurchasePageLocators.text_ktru_count, tree='ktru'):
@@ -160,4 +149,17 @@ class HtmlElement():
         else:
             return self.tree.xpath(PurchasePageLocators.text_ktru_sum_cost)[0].lstrip().rstrip()
 
-    # def get_status(self):
+    def get_region(self):
+        if not self.check_element_existing(PurchasePageLocators.text_region):
+            return ''
+        else:
+            return self.tree.xpath(PurchasePageLocators.text_region)[0].lstrip().rstrip()
+
+
+    def get_purchase_supplier_results(self):
+        if not self.check_element_existing(PurchasePageLocators.a_results_of_determination_of_the_supplier):
+            return ''
+        else:
+            purchase_supplier_results_page = PurchaseSupplierResults(self.link)
+            return purchase_supplier_results_page.contract_blocks
+
