@@ -25,7 +25,7 @@ class PurchasePageLocators:
     text_timezone = '(//span[@class="timeZoneName"])[1]/text()'
     # TODO: добавить в названия переменных локаторов вид переменных (text, button etc)
     # TODO: вместе звездочки приделать //  ?
-    block_ktru = '//div[@id="positionKTRU"]//tbody[@class="tableBlock__body"]/tr[@class="tableBlock__row"]'
+    blocks_ktru = '//div[@id="positionKTRU"]//tbody[@class="tableBlock__body"]/tr[@class="tableBlock__row"]'
     # TODO: может стоит обрабатывать каждый блок закупки отдельно, создавая для него html?
     text_ktru_position_code = '//tr/td[2]/*/text()'
     text_ktru_name_of_product_or_service = '//tr/td[3]/text()'
@@ -33,3 +33,8 @@ class PurchasePageLocators:
     text_ktru_count = '//tr/td[5]/text()'
     text_ktru_sum_cost = '//span[@class="cost"]/text()'
     text_purchase_number = '//a[contains(text(),"№")]/text()'
+    text_region = '//*[contains(text(),"Место нахождения")]/following::*[1]/text()'
+    a_results_of_determination_of_the_supplier = '//a[contains(text(),"Результаты определения поставщика (подрядчика, исп")]'
+    blocks_information_about_the_conclusion_of_the_contract = '//tbody/tr[@class="tableBlock__row"]'
+    provider = '//tr/td[3]/text()'
+    contract_price = '//tr/td[5]/text()'
