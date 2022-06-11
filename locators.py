@@ -32,6 +32,4 @@ class PurchasePageLocators:
     # TODO: посмотреть, какие точно позиции КТРУ нужно собрать
     text_ktru_count = '//tr/td[5]/text()'
     text_ktru_sum_cost = '//span[@class="cost"]/text()'
-
-
-
+    text_purchase_number = '//a[contains(text(),"№")]/text()'

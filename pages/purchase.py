@@ -95,11 +95,16 @@ class HtmlElement():
                 return True
 
     def get_purchase_number(self, link):
-        self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
-        # self.link = link
-        return str(link.split('=')[1])
+        # self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
+        self.link = link
+        print(f'Ссылка: {link}')
+        purchase_number = self.tree.xpath(PurchasePageLocators.text_purchase_number)[0].lstrip().rstrip()
+        print(f'purchase_number: {purchase_number}')
+        return purchase_number
 
     def get_customer(self):
+        if not self.check_element_existing(PurchasePageLocators.text_customer):
+            return ''
         return self.tree.xpath(PurchasePageLocators.text_customer)[0].lstrip().rstrip()
 
     def get_starting_price(self):

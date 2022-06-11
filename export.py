@@ -55,7 +55,7 @@ class Export:
         row = count + 2
         sheet = self.wb['Sheet 1']
         # sheet[f'A{row}'].value = purchase_page.
-        sheet[f'B{row}'].value = f'№ {purchase_page.purchase_number}'
+        sheet[f'B{row}'].value = purchase_page.purchase_number
         sheet[f'C{row}'].value = purchase_page.status
         sheet[f'D{row}'].value = purchase_page.date_and_time_of_the_application_beginning
         sheet[f'E{row}'].value = purchase_page.date_and_time_of_the_application_deadline
