@@ -50,10 +50,36 @@ class Export:
 
         self.wb.save(filename=Path('result data', self.f_name))
 
+    # TODO: нужно ли заранее знать, какое количество строк понадобится?
+    # TODO: нужно ли хранить количество заполненных строк или будем выяснять каждый раз
+    # находим последнюю заполненную строку
+    # последовательно заполняем все строки (последняя заполненная строка + 1), кроме ктру и результатов аукциона
 
-    def dump_data(self, count, purchase_page):
-        row = count + 2
+    # print("Python defined max_column " + str(sheet.max_row))
+    def dump_ktru(self, row, sheet, purchase_page):
+        if purchase_page.ktru_blocks:
+            for block in purchase_page.ktru_blocks:
+                if block['ktru_position_code']:
+                    print()
+                sheet[f'J{row}'].value = block['ktru_position_code']
+                sheet[f'K{row}'].value = block['ktru_name_of_product_or_service']
+                sheet[f'L{row}'].value = block['ktru_count']
+                row += 1
+                print(f'Блок КТРУ: {block["ktru_name_of_product_or_service"]}')
+            print(f'Последний блок КТРУ должен находиться на строке: {row}')
+
+    def dump_purchase_supplier_results(self, row, sheet, purchase_page):
+        if purchase_page.purchase_supplier_results:
+            for block in purchase_page.purchase_supplier_results:
+                sheet[f'M{row}'].value = block['provider']
+                sheet[f'Q{row}'].value = block['contract_price']
+                row += 1
+
+    def dump_data(self, purchase_page):
+        # TODO: sheet, purchase_page в self добавить
         sheet = self.wb['Sheet 1']
+        row = sheet.max_row + 1
+        print(f'Заносим основную информацию на строку: {row}')
         # sheet[f'A{row}'].value = purchase_page.
         sheet[f'B{row}'].value = purchase_page.purchase_number
         sheet[f'C{row}'].value = purchase_page.status
@@ -61,14 +87,8 @@ class Export:
         sheet[f'E{row}'].value = purchase_page.date_and_time_of_the_application_deadline
         sheet[f'F{row}'].value = purchase_page.date_of_the_procedure_for_submitting_proposals
         # sheet[f'G{row}'].value = purchase_page.
-        # sheet[f'H{row}'].value = purchase_page.
+        sheet[f'H{row}'].value = purchase_page.region
         sheet[f'I{row}'].value = purchase_page.customer
-        # sheet[f'J{row}'].value = purchase_page.
-        # sheet[f'K{row}'].value = purchase_page.
-        # sheet[f'L{row}'].value = purchase_page.
-        # sheet[f'M{row}'].value = purchase_page.
-        # sheet[f'N{row}'].value = purchase_page.
-        # sheet[f'O{row}'].value = purchase_page.
         sheet[f'P{row}'].value = purchase_page.ktru_sum_cost
         # sheet[f'Q{row}'].value = purchase_page.
         # sheet[f'R{row}'].value = purchase_page.
@@ -81,6 +101,11 @@ class Export:
         # sheet[f'Y{row}'].value = purchase_page.
         # sheet[f'Z{row}'].value = purchase_page.
 
+        self.dump_ktru(row, sheet, purchase_page)
+        self.dump_purchase_supplier_results(row, sheet, purchase_page)
+
         self.wb.save(filename=Path('result data', self.f_name))
+
+
 #
 # export = Export()
