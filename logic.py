@@ -35,22 +35,14 @@ if __name__ == '__main__':
             sys.exit()
 
         for purchase in main_page.purchases:
-
             status = main_page.get_status(purchase)
-
-            # TODO: удалить логику по статусу
-            # if status not in required_statuses:
-            #     logger.debug(f'Этот статус не совпадает с нужными нам: {status}')
-            #     continue
-
             link = main_page.get_link_to_purchases(purchase)
             purchase_page = PurchasePage(link, status)
             purchase_page.get_page_elements()
+
             purchases_count += 1
 
             export.dump_data(purchases_count, purchase_page)
-
-
 
             bar.next()
     bar.finish()
