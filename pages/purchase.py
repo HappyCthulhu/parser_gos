@@ -35,7 +35,7 @@ class PurchasePage:
         self.date_and_time_of_the_application_beginning = self.element.get_date_and_time_of_the_application_beginning()
         self.date_and_time_of_the_application_deadline = self.element.get_date_and_time_of_the_application_deadline()
         self.date_of_the_procedure_for_submitting_proposals = self.element.get_date_of_the_procedure_for_submitting_proposals()
-        self.ktru_block = self.element.process_ktru_blocks()
+        self.ktru_blocks = self.element.process_ktru_blocks()
         self.ktru_sum_cost = self.element.get_ktru_sum_cost()
         self.purchase_supplier_results = self.element.get_purchase_supplier_results()
 
@@ -51,7 +51,7 @@ class HtmlElement():
 
     def process_ktru_blocks(self):
         ktru_blocks_html = self.get_ktru_blocks()
-        self.ktru_blocks = []
+        ktru_blocks = []
 
         if len(ktru_blocks_html) != 0:
             for block in ktru_blocks_html:
@@ -60,13 +60,15 @@ class HtmlElement():
                 ktru_name_of_product_or_service = self.get_ktru_name_of_product_or_service()
                 ktru_count = self.get_ktru_count()
 
-                self.ktru_blocks.append(
+                ktru_blocks.append(
                     {
                         'ktru_position_code': ktru_position_code,
                         'ktru_name_of_product_or_service': ktru_name_of_product_or_service,
                         'ktru_count': ktru_count
                     }
                 )
+
+        return ktru_blocks
 
     def check_element_existing(self, xpath, tree=None):
         if tree == 'ktru':
