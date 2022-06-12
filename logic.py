@@ -11,8 +11,8 @@ if __name__ == '__main__':
 
     required_statuses = ['Закупка завершена', 'Подача заявок', 'Работа комиссии']
 
-    purchase_search_page_link = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html'
-    main_page = PurchaseSearchPage(purchase_search_page_link)
+    main_purchase_search_page_link = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html'
+    main_page = PurchaseSearchPage(main_purchase_search_page_link)
     number_of_pages = main_page.find_number_of_pages()
     page_numbers = [number + 1 for number in range(number_of_pages)]
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     bar = Bar('Страниц обработано:', max=len(page_numbers) * number_of_purchases_per_page)
     for page_number in page_numbers:
 
-        purchase_search_page_link = f'{purchase_search_page_link}?pageNumber={page_number}&recordsPerPage=_{number_of_purchases_per_page}'
+        purchase_search_page_link = f'{main_purchase_search_page_link}?pageNumber={page_number}&recordsPerPage=_{number_of_purchases_per_page}'
         main_page = PurchaseSearchPage(purchase_search_page_link)
 
         if main_page.response.status_code != 200:
