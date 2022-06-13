@@ -20,7 +20,6 @@ class PurchasePageLocators:
     # При этом, чтоб они могли соять в рандомном порядке внутри одного элемента.
 
     text_date_and_time_of_the_application_beginning = '//*[contains(text(),"начала ")]/following::*[1]/text()[1]'
-    text_timezone = '//*[contains(text(),"начала ")]/following::*[1]/span/text()'
     text_date_and_time_of_the_application_deadline = '//*[contains(text(),"Дата и время окончания срока подачи заявок")]/following::*[1]/text()[1]'
     text_date_of_the_procedure_for_submitting_proposals = '//*[contains(text(),"Дата проведения процедуры подачи предложений о цене контракта либо о сумме цен единиц товара, работы, услуги")]/following::*[1]/text()[1]'
     text_timezone = '(//span[@class="timeZoneName"])[1]/text()'
