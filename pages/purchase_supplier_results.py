@@ -10,8 +10,8 @@ class PurchaseSupplierResults:
 
         order_num = link_to_purchase_common_info.split('=')[1]
         self.tree = self.get_tree(order_num)
-        self.contracts_blocks = self.get_contracts_blocks()
-        self.contract_blocks = self.get_contracts_info()
+        contracts_blocks = self.get_contracts_blocks()
+        self.contract_blocks = self.get_contracts_info(contracts_blocks)
 
     def get_tree(self, order_num):
         headers = {
@@ -58,13 +58,13 @@ class PurchaseSupplierResults:
         else:
             return self.tree.xpath(PurchasePageLocators.contract_price)[0].lstrip().rstrip()
 
-    def get_contracts_info(self):
+    def get_contracts_info(self, contracts_blocks):
         # https://zakupki.gov.ru/epz/order/notice/ea20/view/supplier-results.html?regNumber=0380200000122002530
         contract_blocks = []
 
-        if len(self.contracts_blocks) != 0:
+        if len(contracts_blocks) != 0:
 
-            for block in self.contracts_blocks:
+            for block in contracts_blocks:
                 self.conclution_block_tree = self.get_contract_block_tree(block)
                 provider = self.get_provider()
                 contract_price = self.get_contract_price()
