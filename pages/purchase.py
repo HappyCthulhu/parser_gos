@@ -5,6 +5,12 @@ from locators import PurchasePageLocators
 from logger_settings import logger
 from pages.purchase_supplier_results import PurchaseSupplierResults
 
+# TODO: настроить листание КТРУ (https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0380200000122003021)
+# TODO: КТРУ запросом получить можно
+
+# TODO: мск + 4 не парсит (https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0302300058822000013)
+# TODO: ПОчему нет нмц
+# TODO: код позиции КТРУ не всегда подхватывает
 
 class PurchasePage:
     def __init__(self, link, status):
@@ -100,14 +106,24 @@ class HtmlElement():
         if not self.check_element_existing(PurchasePageLocators.text_starting_price):
             return ''
         else:
-            return self.tree.xpath(PurchasePageLocators.text_starting_price)[0].lstrip().rstrip()
+            return self.tree.xpath(PurchasePageLocators.text_starting_price)[0].replace('₽', '').lstrip().rstrip()
 
     def get_date_and_time_of_the_application_beginning(self):
         if not self.check_element_existing(PurchasePageLocators.text_date_and_time_of_the_application_beginning):
             return ''
         else:
-            return self.tree.xpath(PurchasePageLocators.text_date_and_time_of_the_application_beginning)[
+            # в закупках, чья ссылка имеет regNumber, таймзона лежит в отдельном элементе
+            # в закупках, чья ссылка имеет noticeInfoId, таймзона лежит в том же элементе
+            if self.check_element_existing(PurchasePageLocators.text_timezone):
+                timezone = self.tree.xpath(PurchasePageLocators.text_timezone)[0].lstrip().rstrip()
+                time = self.tree.xpath(PurchasePageLocators.text_date_and_time_of_the_application_beginning)[
                 0].lstrip().rstrip()
+                time_timezone = f'{time} {timezone}'
+                return time_timezone
+
+            else:
+                return self.tree.xpath(PurchasePageLocators.text_date_and_time_of_the_application_beginning)[
+                    0].lstrip().rstrip()
 
     def get_date_and_time_of_the_application_deadline(self):
         if not self.check_element_existing(PurchasePageLocators.text_date_and_time_of_the_application_deadline):
@@ -130,7 +146,7 @@ class HtmlElement():
         if not self.check_element_existing(PurchasePageLocators.text_ktru_position_code, tree='ktru'):
             return ''
         else:
-            return self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_position_code)[0].lstrip().rstrip()
+            return ''.join(self.ktru_block_tree.xpath(PurchasePageLocators.text_ktru_position_code)).lstrip().rstrip()
 
     def get_ktru_name_of_product_or_service(self):
         if not self.check_element_existing(PurchasePageLocators.text_ktru_name_of_product_or_service, tree='ktru'):
@@ -149,7 +165,7 @@ class HtmlElement():
         if not self.check_element_existing(PurchasePageLocators.text_ktru_sum_cost):
             return ''
         else:
-            return self.tree.xpath(PurchasePageLocators.text_ktru_sum_cost)[0].lstrip().rstrip()
+            return self.tree.xpath(PurchasePageLocators.text_ktru_sum_cost)[0].replace('₽', '').lstrip().rstrip()
 
     def get_region(self):
         if not self.check_element_existing(PurchasePageLocators.text_region):
