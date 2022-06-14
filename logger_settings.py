@@ -43,6 +43,7 @@ def my_exception_hook(type, value, tb):
                 f"Traceback: {traceback_details}" \
                 f"______________________________\n"
 
+    logger.info('Парсинг закончен')
     if Path(logging_dp, 'unexpected_exceptions.log').is_file():
         with open(Path(logging_dp, 'unexpected_exceptions.log'), 'a', encoding='utf-8') as log_file:
             log_file.write(error_msg)
