@@ -10,8 +10,8 @@ from pages.purchase_search_page import PurchaseSearchPage
 if __name__ == '__main__':
 
     required_statuses = ['Закупка завершена', 'Подача заявок', 'Работа комиссии']
-
     main_purchase_search_page_link = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html'
+
     main_page = PurchaseSearchPage(main_purchase_search_page_link)
     number_of_pages = main_page.find_number_of_pages()
     page_numbers = [number + 1 for number in range(number_of_pages)]
@@ -29,10 +29,6 @@ if __name__ == '__main__':
         purchase_search_page_link = f'{main_purchase_search_page_link}?pageNumber={page_number}&recordsPerPage=_{number_of_purchases_per_page}'
         main_page = PurchaseSearchPage(purchase_search_page_link)
 
-        if main_page.response.status_code != 200:
-            logger.critical(f'Статус код: {main_page.response.status_code}')
-            logger.debug(main_page.response.text)
-            sys.exit()
 
         for purchase in main_page.purchases:
             status = main_page.get_status(purchase)
@@ -42,7 +38,8 @@ if __name__ == '__main__':
 
             purchases_count += 1
 
-            export.dump_data(purchase_page)
+            export.dump_data(purchase_page, purchases_count)
 
             bar.next()
     bar.finish()
+    logger.info('Парсинг закончен')
