@@ -1,33 +1,17 @@
-import requests
-from lxml import html
-
 from locators import PurchasePageLocators
-from logger_settings import logger
+from pages.base_page import BasePage
 
 
-class PurchaseSupplierResults:
+class PurchaseSupplierResults(BasePage):
     def __init__(self, link_to_purchase_common_info):
 
         order_num = link_to_purchase_common_info.split('=')[1]
-        self.tree = self.get_tree(order_num)
+        self.tree = self.get_tree(
+            'https://zakupki.gov.ru/epz/order/notice/rpec/search-results.html',
+            {'orderNum': order_num}
+        )
         contracts_blocks = self.get_contracts_blocks()
         self.contract_blocks = self.get_contracts_info(contracts_blocks)
-
-    def get_tree(self, order_num):
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
-        }
-
-        params = {
-            'orderNum': order_num,
-        }
-
-        response = requests.get('https://zakupki.gov.ru/epz/order/notice/rpec/search-results.html', params=params, headers=headers)
-
-        if response.status_code != 200:
-            logger.critical(f'Статус страницы закупки: {response.status_code}')
-
-        return html.document_fromstring(response.text)
 
     def check_element_existing(self, xpath):
         if len(self.tree.xpath(xpath)) == 0:
@@ -38,13 +22,6 @@ class PurchaseSupplierResults:
     def get_contracts_blocks(self):
         return self.tree.xpath(
             PurchasePageLocators.blocks_information_about_the_conclusion_of_the_contract)
-
-    # TODO: мб в одну функцию объединить с get_ktru_block()?
-    def get_contract_block_tree(self, block):
-        #  TODO: функция, которая html возвращает
-        block_html = html.tostring(block)
-        block_tree = html.document_fromstring(block_html)
-        return block_tree
 
     def get_provider(self):
         if not self.check_element_existing(PurchasePageLocators.provider):
@@ -65,7 +42,7 @@ class PurchaseSupplierResults:
         if len(contracts_blocks) != 0:
 
             for block in contracts_blocks:
-                self.conclution_block_tree = self.get_contract_block_tree(block)
+                self.conclution_block_tree = self.from_lxml_to_html_to_lxml(block)
                 provider = self.get_provider()
                 contract_price = self.get_contract_price()
 

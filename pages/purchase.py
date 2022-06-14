@@ -1,37 +1,18 @@
-import requests
 from lxml import html
 
 from locators import PurchasePageLocators
-from logger_settings import logger
+from pages.base_page import BasePage
 from pages.purchase_supplier_results import PurchaseSupplierResults
 
-# TODO: настроить листание КТРУ (https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0380200000122003021)
-# TODO: КТРУ запросом получить можно
 
-# TODO: мск + 4 не парсит (https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0302300058822000013)
-# TODO: ПОчему нет нмц
-# TODO: код позиции КТРУ не всегда подхватывает
-
-class PurchasePage:
+# TODO: создать BasePage? Типа, класс, содержащий методы, которые пригодятся везде
+class PurchasePage(BasePage):
     def __init__(self, link, status):
         # self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
-        # TODO: он дважды обрабатывает одну и ту же страницу. Выяснить, почему
         self.link = link
         self.status = status
-        self.tree = self.get_tree()
+        self.tree = self.get_tree(self.link)
         self.element = HtmlElement(self.tree)
-
-    def get_tree(self):
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
-        }
-
-        response = requests.get(self.link, headers=headers)
-
-        if response.status_code != 200:
-            logger.critical(f'Статус страницы закупки: {response.status_code}')
-
-        return html.document_fromstring(response.text)
 
     def get_page_elements(self):
         self.purchase_number = self.element.get_purchase_number(self.link)
@@ -46,14 +27,9 @@ class PurchasePage:
         self.purchase_supplier_results = self.element.get_purchase_supplier_results()
 
 
-class HtmlElement():
+class HtmlElement(BasePage):
     def __init__(self, tree):
         self.tree = tree
-
-    def get_ktru_block(self, block):
-        block_html = html.tostring(block)
-        ktru_tree = html.document_fromstring(block_html)
-        return ktru_tree
 
     def process_ktru_blocks(self):
         ktru_blocks_html = self.get_ktru_blocks()
@@ -61,7 +37,7 @@ class HtmlElement():
 
         if len(ktru_blocks_html) != 0:
             for block in ktru_blocks_html:
-                self.ktru_block_tree = self.get_ktru_block(block)
+                self.ktru_block_tree = self.from_lxml_to_html_to_lxml(block)
                 ktru_position_code = self.get_ktru_position_code()
                 ktru_name_of_product_or_service = self.get_ktru_name_of_product_or_service()
                 ktru_count = self.get_ktru_count()
@@ -117,7 +93,7 @@ class HtmlElement():
             if self.check_element_existing(PurchasePageLocators.text_timezone):
                 timezone = self.tree.xpath(PurchasePageLocators.text_timezone)[0].lstrip().rstrip()
                 time = self.tree.xpath(PurchasePageLocators.text_date_and_time_of_the_application_beginning)[
-                0].lstrip().rstrip()
+                    0].lstrip().rstrip()
                 time_timezone = f'{time} {timezone}'
                 return time_timezone
 
@@ -173,11 +149,9 @@ class HtmlElement():
         else:
             return self.tree.xpath(PurchasePageLocators.text_region)[0].lstrip().rstrip()
 
-
     def get_purchase_supplier_results(self):
         if not self.check_element_existing(PurchasePageLocators.a_results_of_determination_of_the_supplier):
             return ''
         else:
             purchase_supplier_results_page = PurchaseSupplierResults(self.link)
             return purchase_supplier_results_page.contract_blocks
-
