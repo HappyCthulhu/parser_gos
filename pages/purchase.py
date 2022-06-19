@@ -1,11 +1,8 @@
-from lxml import html
-
 from locators import PurchasePageLocators
 from pages.base_page import BasePage
 from pages.purchase_supplier_results import PurchaseSupplierResults
 
 
-# TODO: создать BasePage? Типа, класс, содержащий методы, которые пригодятся везде
 class PurchasePage(BasePage):
     def __init__(self, link, status):
         # self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
