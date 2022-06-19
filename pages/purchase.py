@@ -5,7 +5,6 @@ from pages.purchase_supplier_results import PurchaseSupplierResults
 
 class PurchasePage(BasePage):
     def __init__(self, link, status):
-        # self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
         self.link = link
         self.status = status
         self.tree = self.get_tree(self.link)
@@ -63,8 +62,6 @@ class HtmlElement(BasePage):
                 return True
 
     def get_purchase_number(self, link):
-        # self.link = 'https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0319200063622000125'
-        self.link = link
         print(f'Ссылка: {link}')
         purchase_number = self.tree.xpath(PurchasePageLocators.text_purchase_number)[0].lstrip().rstrip()
         print(f'purchase_number: {purchase_number}')
