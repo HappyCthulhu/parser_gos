@@ -1,5 +1,4 @@
 from locators import MainPageLocators
-from logger_settings import logger
 
 from pages.base_page import BasePage
 
@@ -12,7 +11,6 @@ class PurchaseSearchPage(BasePage):
 
     def create_link(self, main_link, link_params):
 
-        logger.debug(link_params)
         link = f'{main_link}?&search-filter=Дате+размещения&sortBy=UPDATE_DATE'
 
         if link_params.get("search_string"):
