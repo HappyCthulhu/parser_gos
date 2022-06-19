@@ -6,19 +6,11 @@ class MainPageLocators:
     text_pages_number = '//span[@class="link-text"]/text()'
 
 
-# pageNumber = 150
-# recordsPerPage=_50
-
 class PurchasePageLocators:
     # text_purchase_number = '//div[@class="registry-entry__header-mid__number"]/a/text()'
     text_address = '//*[contains(text(),"Место нахождения")]/following::*[1]/text()'
     text_customer = '//*[normalize-space(text()) = "Заказчик"]/following::*[1]/a/text()'
     text_starting_price = '//*[contains(text(),"Начальная цена")]/following::*[1]/text()'
-    # оператор AND приделать внутри Xpath.
-    # Ибо сейчас он ищет только по слову "начала",
-    # а надо еще и по "дата". Чтоб по двум словам подряд искал
-    # При этом, чтоб они могли соять в рандомном порядке внутри одного элемента.
-
     text_date_and_time_of_the_application_beginning = '//*[contains(text(),"начала ")]/following::*[1]/text()[1]'
     text_date_and_time_of_the_application_deadline = '//*[contains(text(),"Дата и время окончания срока подачи заявок")]/following::*[1]/text()[1]'
     text_date_of_the_procedure_for_submitting_proposals = '//*[contains(text(),"Дата проведения процедуры подачи предложений о цене контракта либо о сумме цен единиц товара, работы, услуги")]/following::*[1]/text()[1]'
