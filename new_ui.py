@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'untitled_bac.ui'
-#
+#jC
 # Created by: PyQt5 UI code generator 5.15.6
 #
 # WARNING: Any manual changes made to this file will be lost when pyuic5 is
@@ -204,3 +204,5 @@ class Ui_MainWindow(object):
         self.pushButton_14.setText(_translate("MainWindow", "СТАРТ"))
         self.label_12.setText(_translate("MainWindow",
                                          "<html><head/><body><p>Сохранить в .xlsx формате. Сохранённые даные можно найти в папке results<br/>в корневой папке парсера</p></body></html>"))
+        self.dateEdit.setDate(QtCore.QDate.fromString('01.01.2013', 'd.M.yyyy'))
+        self.dateEdit_2.setDate(QtCore.QDate.fromString('01.01.2015', 'd.M.yyyy'))
