@@ -63,9 +63,9 @@ class HtmlElement(BasePage):
                 return True
 
     def get_purchase_number(self, link):
-        logger.debug(f'Ссылка: {link}')
+        logger.info(f'Ссылка: {link}')
         purchase_number = self.tree.xpath(PurchasePageLocators.text_purchase_number)[0].lstrip().rstrip()
-        logger.debug(f'purchase_number: {purchase_number}')
+        logger.info(f'purchase_number: {purchase_number}')
         return purchase_number
 
     def get_customer(self):
