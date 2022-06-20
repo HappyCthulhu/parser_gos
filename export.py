@@ -105,7 +105,6 @@ class Export:
             self.sheet[f'{letter}{row}'].border = styles
 
     def dump_data(self, purchase_page, purchases_count):
-        # TODO: sheet, purchase_page в self добавить
         row = self.sheet.max_row + 1
 
         self.apply_styles(row, self.column_border)
