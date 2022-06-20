@@ -1,4 +1,5 @@
 from locators import PurchasePageLocators
+from logger_settings import logger
 from pages.base_page import BasePage
 from pages.purchase_supplier_results import PurchaseSupplierResults
 
@@ -62,9 +63,9 @@ class HtmlElement(BasePage):
                 return True
 
     def get_purchase_number(self, link):
-        print(f'Ссылка: {link}')
+        logger.debug(f'Ссылка: {link}')
         purchase_number = self.tree.xpath(PurchasePageLocators.text_purchase_number)[0].lstrip().rstrip()
-        print(f'purchase_number: {purchase_number}')
+        logger.debug(f'purchase_number: {purchase_number}')
         return purchase_number
 
     def get_customer(self):
