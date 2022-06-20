@@ -19,8 +19,7 @@ def set_logger():
 
     logger_format_debug = "<green>{time:DD-MM-YY HH:mm:ss}</> | <bold><blue>{level}</></> | " \
                           "<cyan>{file}:{function}:{line}</> | <blue>{message}</> | <blue>🛠</>"
-    logger_format_info = "<green>{time:DD-MM-YY HH:mm:ss}</> | <bold><fg 255,255,255>{level}</></> | " \
-                         "<cyan>{file}:{function}:{line}</> | <fg 255,255,255>{message}</> | <fg 255,255,255>✔</>"
+    logger_format_info = "<green>{time:DD-MM-YY HH:mm:ss}</> | <fg 255,255,255>{message}</> | <fg 255,255,255></>"
     logger_format_critical = "<green>{time:DD-MM-YY HH:mm:ss}</> | <RED><fg 255,255,255>{level}</></> | " \
                              "<cyan>{file}:{function}:{line}</> | <fg 255,255,255><RED>{message}</></> | " \
                              "<RED><fg 255,255,255>❌</></>"
