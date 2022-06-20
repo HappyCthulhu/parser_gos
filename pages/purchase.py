@@ -20,7 +20,7 @@ class PurchasePage(BasePage):
         self.date_of_the_procedure_for_submitting_proposals = self.element.get_date_of_the_procedure_for_submitting_proposals()
         self.ktru_blocks = self.element.process_ktru_blocks()
         self.ktru_sum_cost = self.element.get_ktru_sum_cost()
-        self.purchase_supplier_results = self.element.get_purchase_supplier_results()
+        self.purchase_supplier_results = self.element.get_purchase_supplier_results(self.link)
 
 
 class HtmlElement(BasePage):
@@ -143,9 +143,9 @@ class HtmlElement(BasePage):
         else:
             return self.tree.xpath(PurchasePageLocators.text_region)[0].lstrip().rstrip()
 
-    def get_purchase_supplier_results(self):
+    def get_purchase_supplier_results(self, link):
         if not self.check_element_existing(PurchasePageLocators.a_results_of_determination_of_the_supplier):
             return ''
         else:
-            purchase_supplier_results_page = PurchaseSupplierResults(self.link)
+            purchase_supplier_results_page = PurchaseSupplierResults(link)
             return purchase_supplier_results_page.contract_blocks
