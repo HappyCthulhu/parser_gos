@@ -5,6 +5,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from yaml.loader import SafeLoader
 
+from logger_settings import logger
 from logic import start_parse
 from new_ui import Ui_MainWindow
 
@@ -37,8 +38,6 @@ class Reactions():
             self.ui.lineEdit_3.setEnabled(True)
             self.ui.lineEdit_2.setEnabled(True)
 
-
-
     def get_publish_date(self):
         if self.ui.checkbox.checkState():
             self.link_params['publish_date_from'] = self.ui.dateEdit.date().toString("dd.MM.yyyy")
@@ -50,7 +49,6 @@ class Reactions():
         else:
             self.ui.dateEdit.setEnabled(True)
             self.ui.dateEdit_2.setEnabled(True)
-
 
     # TODO: как-нибудь переименовать в start_parsing
     def start(self):
@@ -79,17 +77,18 @@ class Reactions():
     def clear_input(self):
         self.ui.lineEdit.setText('')
 
+
 class ThreadClass(QtCore.QThread):
     any_signal = QtCore.pyqtSignal(int)
 
-    def __init__(self, parent=None, index=0, link_params:dict=None):
+    def __init__(self, parent=None, index=0, link_params: dict = None):
         super(ThreadClass, self).__init__(parent)
         self.index = index
         self.link_params = link_params
         self.is_running = True
 
     def run(self):
-        print('Starting thread...', self.index)
+        logger.info('Starting thread...', self.index)
 
         start_parse(self.link_params)
 
@@ -102,7 +101,7 @@ class ThreadClass(QtCore.QThread):
 
     def stop(self):
         self.is_running = False
-        print('Stopping thread...', self.index)
+        logger.info('Stopping thread...', self.index)
         self.terminate()
 
 
