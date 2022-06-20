@@ -26,7 +26,6 @@ def start_parse(search_params):
 
         search_params['page_number'] = page_number
         search_params['records_per_page'] = records_per_page
-        # logger.info(f'Первичная ссылка поиска: {purchase_search_page_link}')
         main_page = PurchaseSearchPage(main_purchase_search_page_link, search_params)
 
         for purchase in main_page.purchases:
