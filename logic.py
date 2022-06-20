@@ -1,5 +1,3 @@
-from progress.bar import Bar
-
 from export import Export
 from logger_settings import logger
 from pages.purchase import PurchasePage
@@ -21,7 +19,6 @@ def start_parse(search_params):
 
     export = Export()
 
-    bar = Bar('Страниц обработано:', max=len(page_numbers) * records_per_page)
     for page_number in page_numbers:
 
         search_params['page_number'] = page_number
@@ -35,9 +32,8 @@ def start_parse(search_params):
             purchase_page.get_page_elements()
 
             purchases_count += 1
+            logger.info(f'Страниц обработано: {purchases_count}/{len(page_numbers) * records_per_page}')
 
             export.dump_data(purchase_page, purchases_count)
 
-            bar.next()
-    bar.finish()
     logger.info('Парсинг закончен')
