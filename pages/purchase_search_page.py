@@ -9,7 +9,8 @@ class PurchaseSearchPage(BasePage):
         self.tree = self.get_tree(self.link)
         self.purchases = self.get_purchases()
 
-    def create_link(self, main_link, link_params):
+    @staticmethod
+    def create_link(main_link, link_params):
 
         link = f'{main_link}?&search-filter=Дате+размещения&sortBy=UPDATE_DATE'
 
