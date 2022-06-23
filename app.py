@@ -1,5 +1,7 @@
+import json
 import time
 
+import requests
 import yaml
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -8,6 +10,23 @@ from yaml.loader import SafeLoader
 from logger_settings import logger
 from logic import start_parse
 from new_ui import Ui_MainWindow
+
+
+def check_access():
+    try:
+        response = requests.get('http://5.44.41.237:8080/status')
+        response = json.loads(response.text)
+        status = response['status']
+        if status == 'stop':
+            return False
+        elif status == 'start':
+            return True
+
+        return status
+
+    except:
+        status = True
+        return status
 
 
 # PyQt5.uic.pyuic -x [FILENAME].ui -o [FILENAME].py
@@ -53,6 +72,14 @@ class Reactions():
     # TODO: как-нибудь переименовать в start_parsing
     def start(self):
         # TODO: добавить проверку на то, были ли найдены записи: //a[contains(text(),"№")]
+
+        print(check_access)
+        if check_access():
+            pass
+        else:
+            print('Sorry, this app cant run on your device')
+            sys.exit(app.exec_())
+
         self.link_params['search_string'] = self.ui.lineEdit.text()
         self.thread[1] = ThreadClass(parent=None, index=1, link_params=self.link_params)
         self.thread[1].start()
