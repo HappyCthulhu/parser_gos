@@ -36,7 +36,7 @@ class Export:
                                top=Side(style='thin'),
                                bottom=Side(style='thin'))
 
-        self.choose_styles('2', column_border)
+        self.set_styles('2', column_border)
 
         self.sheet[f'A1'].value = f'Начало парсинга: {self.start_time}'
         self.sheet.column_dimensions['A'].width = 10
@@ -85,7 +85,7 @@ class Export:
             for block in self.purchase_page.ktru_blocks:
                 if block['ktru_position_code']:
                     self.sheet[f'J{row}'].value = block['ktru_position_code']
-                self.choose_styles(row, self.column_border)
+                self.set_styles(row, self.column_border)
                 self.sheet[f'K{row}'].value = block['ktru_name_of_product_or_service']
                 self.sheet[f'L{row}'].value = block['ktru_count']
 
@@ -94,24 +94,23 @@ class Export:
     def dump_purchase_supplier_results(self, row):
         if self.purchase_page.purchase_supplier_results:
             for block in self.purchase_page.purchase_supplier_results:
-                self.choose_styles(row, self.column_border)
+                self.set_styles(row, self.column_border)
                 self.sheet[f'M{row}'].value = block['provider']
                 self.sheet[f'Q{row}'].value = block['contract_price']
 
                 row += 1
 
-    def set_styles(self, color, row, styles):
+    def set_styles(self, row, styles):
+        if self.purchases_count % 2 == 0:
+            color = 'C3FAD2'
+        else:
+            color = 'F5EEDA'
+
         for rows in self.sheet.iter_rows(min_row=int(row), max_row=self.sheet.max_row, min_col=self.sheet.min_column,
                                          max_col=self.sheet.max_column):
             for cell in rows:
                 cell.fill = PatternFill(start_color=color, end_color=color, fill_type="solid")
                 cell.border = styles
-
-    def choose_styles(self, row, styles):
-        if self.purchases_count % 2 == 0:
-            self.set_styles('96ff95', row, styles)
-        else:
-            self.set_styles('ffc0cb', row, styles)
 
     def dump_data(self, purchase_page, purchases_count):
         row = self.sheet.max_row + 1
@@ -133,5 +132,5 @@ class Export:
         self.dump_ktru(row)
         self.dump_purchase_supplier_results(row)
 
-        self.choose_styles(row, self.column_border)
+        self.set_styles(row, self.column_border)
         self.wb.save(filename=Path('result data', self.f_name))
