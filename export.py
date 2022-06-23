@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 
 from openpyxl import Workbook
+from openpyxl.styles import PatternFill
 from openpyxl.styles.borders import Border, Side
 
 
@@ -28,13 +29,14 @@ class Export:
 
     def create_titles(self):
         self.sheet.column_dimensions['A'].width = 7
+        self.purchases_count = 1
 
         column_border = Border(left=Side(style='thin'),
                                right=Side(style='thin'),
                                top=Side(style='thin'),
                                bottom=Side(style='thin'))
 
-        self.apply_styles('2', column_border)
+        self.choose_styles('2', column_border)
 
         self.sheet[f'A1'].value = f'Начало парсинга: {self.start_time}'
         self.sheet.column_dimensions['A'].width = 10
@@ -83,7 +85,7 @@ class Export:
             for block in self.purchase_page.ktru_blocks:
                 if block['ktru_position_code']:
                     self.sheet[f'J{row}'].value = block['ktru_position_code']
-                self.apply_styles(row, self.column_border)
+                self.choose_styles(row, self.column_border)
                 self.sheet[f'K{row}'].value = block['ktru_name_of_product_or_service']
                 self.sheet[f'L{row}'].value = block['ktru_count']
 
@@ -92,24 +94,30 @@ class Export:
     def dump_purchase_supplier_results(self, row):
         if self.purchase_page.purchase_supplier_results:
             for block in self.purchase_page.purchase_supplier_results:
-                self.apply_styles(row, self.column_border)
+                self.choose_styles(row, self.column_border)
                 self.sheet[f'M{row}'].value = block['provider']
                 self.sheet[f'Q{row}'].value = block['contract_price']
 
                 row += 1
 
-    def apply_styles(self, row, styles):
-        column_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'Q', 'P']
+    def set_styles(self, color, row, styles):
+        for rows in self.sheet.iter_rows(min_row=int(row), max_row=self.sheet.max_row, min_col=self.sheet.min_column,
+                                         max_col=self.sheet.max_column):
+            for cell in rows:
+                cell.fill = PatternFill(start_color=color, end_color=color, fill_type="solid")
+                cell.border = styles
 
-        for letter in column_letters:
-            self.sheet[f'{letter}{row}'].border = styles
+    def choose_styles(self, row, styles):
+        if self.purchases_count % 2 == 0:
+            self.set_styles('96ff95', row, styles)
+        else:
+            self.set_styles('ffc0cb', row, styles)
 
     def dump_data(self, purchase_page, purchases_count):
         row = self.sheet.max_row + 1
 
-        self.apply_styles(row, self.column_border)
-
         self.purchase_page = purchase_page
+        self.purchases_count = purchases_count
 
         self.sheet[f'A{row}'].value = purchases_count
         self.sheet[f'B{row}'].value = purchase_page.purchase_number
@@ -125,4 +133,5 @@ class Export:
         self.dump_ktru(row)
         self.dump_purchase_supplier_results(row)
 
+        self.choose_styles(row, self.column_border)
         self.wb.save(filename=Path('result data', self.f_name))
