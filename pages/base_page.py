@@ -14,7 +14,11 @@ class BasePage():
                                 headers=headers)
 
         if response.status_code != 200:
-            logger.critical(f'Статус страницы закупки: {response.status_code}')
+            # TODO: попробовать достать функцию, которая вызывает этот класс
+            logger.critical(f'Статус страницы закупки: {response.status_code}'
+                            f'Ссылка запроса: {link}'
+                            f'Параметры: {params}'
+                            f'Заголовки: {headers}')
 
         return html.document_fromstring(response.text)
 
@@ -24,3 +28,10 @@ class BasePage():
         html_str = html.tostring(lxml_obj)
         lxml_obj = html.document_fromstring(html_str)
         return lxml_obj
+
+    def check_element_existing(self, xpath, tree):
+        if len(tree.xpath(xpath)) == 0:
+            return False
+        else:
+            return True
+
