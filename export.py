@@ -64,7 +64,7 @@ class Export:
         self.sheet[f'L2'].value = 'Количество товара'
         self.sheet[f'M2'].value = 'Список участников'
         self.sheet[f'N2'].value = 'Сумма в заявке'
-        self.sheet[f'O2'].value = 'Победитель аукциона'
+        self.sheet[f'O2'].value = 'Поставщик'
         self.sheet.column_dimensions['P'].width = 15
         self.sheet[f'P2'].value = 'Сумма по аукциону'
         self.sheet[f'Q2'].value = 'Сумма контракта'
@@ -77,8 +77,22 @@ class Export:
         self.sheet[f'X2'].value = 'Ссылка на выписку из реестра МинПромТорга'
         self.sheet[f'Y2'].value = 'Файлы'
         self.sheet[f'Z2'].value = 'Упоминание'
+        self.sheet[f'AA2'].value = 'Почта'
+        self.sheet[f'AB2'].value = 'Телефон'
+        self.sheet.column_dimensions['AB'].width = 15
+        # self.sheet[f'AC2'].value = 'Поставщик'
+        # self.sheet.column_dimensions['AC'].width = 15
 
         self.wb.save(filename=Path('result data', self.f_name))
+
+    def dump_ru_numbers(self, row):
+        if self.purchase_page.ru_numbers:
+            for number in self.purchase_page.ru_numbers:
+                if number:
+                    self.sheet[f'U{row}'].value = number
+                    self.set_styles(row, self.column_border)
+
+                row += 1
 
     def dump_ktru(self, row):
         if self.purchase_page.ktru_blocks:
@@ -95,7 +109,7 @@ class Export:
         if self.purchase_page.purchase_supplier_results:
             for block in self.purchase_page.purchase_supplier_results:
                 self.set_styles(row, self.column_border)
-                self.sheet[f'M{row}'].value = block['provider']
+                self.sheet[f'O{row}'].value = block['provider']
                 self.sheet[f'Q{row}'].value = block['contract_price']
 
                 row += 1
@@ -120,6 +134,7 @@ class Export:
 
         self.sheet[f'A{row}'].value = purchases_count
         self.sheet[f'B{row}'].value = purchase_page.purchase_number
+        self.sheet[f'B{row}'].hyperlink = purchase_page.link
         self.sheet[f'C{row}'].value = purchase_page.status
         self.sheet[f'D{row}'].value = purchase_page.date_and_time_of_the_application_beginning
         self.sheet[f'E{row}'].value = purchase_page.date_and_time_of_the_application_deadline
@@ -128,8 +143,13 @@ class Export:
         self.sheet[f'H{row}'].value = purchase_page.region
         self.sheet[f'I{row}'].value = purchase_page.customer
         self.sheet[f'P{row}'].value = purchase_page.ktru_sum_cost
+        self.sheet[f'AA{row}'].value = purchase_page.email
+        self.sheet[f'AB{row}'].value = purchase_page.phone_number
+        # TODO: что с поставщиком? Чем отличается от списка участников? Решил, что списка участников не будет прост)0)00)
+        self.sheet[f'O{row}'].value = purchase_page.phone_number
 
         self.dump_ktru(row)
+        self.dump_ru_numbers(row)
         self.dump_purchase_supplier_results(row)
 
         self.set_styles(row, self.column_border)
