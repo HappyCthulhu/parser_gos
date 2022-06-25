@@ -24,5 +24,17 @@ class PurchasePageLocators:
     text_region = '//*[contains(text(),"Место нахождения")]/following::*[1]/text()'
     a_results_of_determination_of_the_supplier = '//a[contains(text(),"Результаты определения поставщика (подрядчика, исп")]'
     blocks_information_about_the_conclusion_of_the_contract = '//tbody/tr[@class="tableBlock__row"]'
-    provider = '//tr/td[3]/text()'
+    email = '//*[normalize-space(text()) = "Адрес электронной почты"]/following::*[1]/text()[1]'
+    phone_number = '//*[normalize-space(text()) = "Номер контактного телефона"]/following::*[1]/text()[1]'
+    information_about_the_contract_closing_procedure = '//form[@id="searchDraftForm"]//tbody[@class="tableBlock__body"]/tr[@class="tableBlock__row"]'
+
+class PurchaseSupplierResultsLocators:
+    text_provider = '//tr/td[3]//text()'
+    status = '(//tr/td[4]//text())[1]'
     contract_price = '//tr/td[5]/text()'
+    provider = '//tr/td[3]/text()'
+    data_id_draft_id = '//tbody[@class="tableBlock__body"]/tr[@class="tableBlock__row"]/td/span/@data-id'
+
+class DocumentsResultsLocators:
+    a_contract_file = '//a[contains(@href,"file.html")]/@href'
+
