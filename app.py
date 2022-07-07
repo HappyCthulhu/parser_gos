@@ -33,7 +33,7 @@ def check_access():
 class Reactions():
     def __init__(self, ui):
         self.ui = ui
-        self.thread = {}
+        self.thread = None
         self.link_params = {}
 
     def ui_reactions(self):
@@ -81,12 +81,12 @@ class Reactions():
             sys.exit(app.exec_())
 
         self.link_params['search_string'] = self.ui.lineEdit.text()
-        self.thread[1] = ThreadClass(parent=None, index=1, link_params=self.link_params)
-        self.thread[1].start()
+        self.thread = ThreadClass(parent=None, index=1, link_params=self.link_params)
+        self.thread.start()
         self.ui.pushButton_14.setEnabled(False)
 
     def stop(self):
-        self.thread[1].stop()
+        self.thread.stop()
         self.ui.pushButton_14.setEnabled(True)
 
     def load_search_string(self):
@@ -116,15 +116,7 @@ class ThreadClass(QtCore.QThread):
 
     def run(self):
         logger.info('Starting thread...', self.index)
-
         start_parse(self.link_params)
-
-        cnt = 0
-        while (True):
-            cnt += 1
-            if cnt == 99: cnt = 0
-            time.sleep(0.01)
-            self.any_signal.emit(cnt)
 
     def stop(self):
         self.is_running = False
@@ -147,3 +139,4 @@ if __name__ == "__main__":
     MainWindow.show()
 
     sys.exit(app.exec_())
+
