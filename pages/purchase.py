@@ -31,7 +31,7 @@ class PurchasePage(BasePage):
         self.purchase_supplier_results = self.element.get_purchase_supplier_results(self.purchase_supplier_results_page)
         self.ru_numbers = self.element.get_ru_numbers(self.documents_results_page)
         # TODO: действительно ли purchase_supplier_results много блоков может быть? Имеет ли смысл словарь делать?
-        # self.provider = self.element.get_provider(self.purchase_supplier_results_page)
+        self.provider = self.element.get_provider(self.purchase_supplier_results_page)
         # TODO: проверить таки, почему победитель не парсится
 
     def get_purchase_supplier_results_page(self, link):
@@ -189,11 +189,11 @@ class HtmlElement(BasePage):
         else:
             return ''
 
-    # def get_provider(self, purchase_supplier_results_page):
-    #     if purchase_supplier_results_page == '':
-    #         return ''
-    #     else:
-    #         return purchase_supplier_results_page.get_provider()
+    def get_provider(self, purchase_supplier_results_page):
+        if purchase_supplier_results_page == '':
+            return ''
+        else:
+            return purchase_supplier_results_page.get_provider()
 
 
 

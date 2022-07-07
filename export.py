@@ -80,8 +80,6 @@ class Export:
         self.sheet[f'AA2'].value = 'Почта'
         self.sheet[f'AB2'].value = 'Телефон'
         self.sheet.column_dimensions['AB'].width = 15
-        # self.sheet[f'AC2'].value = 'Поставщик'
-        # self.sheet.column_dimensions['AC'].width = 15
 
         self.wb.save(filename=Path('result data', self.f_name))
 
@@ -146,7 +144,7 @@ class Export:
         self.sheet[f'AA{row}'].value = purchase_page.email
         self.sheet[f'AB{row}'].value = purchase_page.phone_number
         # TODO: что с поставщиком? Чем отличается от списка участников? Решил, что списка участников не будет прост)0)00)
-        self.sheet[f'O{row}'].value = purchase_page.phone_number
+        self.sheet[f'O{row}'].value = purchase_page.provider
 
         self.dump_ktru(row)
         self.dump_ru_numbers(row)
