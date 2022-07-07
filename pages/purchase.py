@@ -17,22 +17,28 @@ class PurchasePage(BasePage):
 
     # TODO: мб в init все перенести?
     def get_page_elements(self):
-        self.purchase_number = self.element.get_purchase_number(self.link)
-        self.customer = self.element.get_customer()
-        self.region = self.element.get_region()
-        self.starting_price = self.element.get_starting_price()
-        self.date_and_time_of_the_application_beginning = self.element.get_date_and_time_of_the_application_beginning()
-        self.date_and_time_of_the_application_deadline = self.element.get_date_and_time_of_the_application_deadline()
-        self.date_of_the_procedure_for_submitting_proposals = self.element.get_date_of_the_procedure_for_submitting_proposals()
-        self.ktru_blocks = self.element.process_ktru_blocks()
-        self.ktru_sum_cost = self.element.get_ktru_sum_cost()
-        self.email = self.element.get_email()
-        self.phone_number = self.element.get_phone_number()
-        self.purchase_supplier_results = self.element.get_purchase_supplier_results(self.purchase_supplier_results_page)
-        self.ru_numbers = self.element.get_ru_numbers(self.documents_results_page)
-        # TODO: действительно ли purchase_supplier_results много блоков может быть? Имеет ли смысл словарь делать?
-        self.provider = self.element.get_provider(self.purchase_supplier_results_page)
-        # TODO: проверить таки, почему победитель не парсится
+
+        try:
+            self.purchase_number = self.element.get_purchase_number(self.link)
+            self.customer = self.element.get_customer()
+            self.region = self.element.get_region()
+            self.starting_price = self.element.get_starting_price()
+            self.date_and_time_of_the_application_beginning = self.element.get_date_and_time_of_the_application_beginning()
+            self.date_and_time_of_the_application_deadline = self.element.get_date_and_time_of_the_application_deadline()
+            self.date_of_the_procedure_for_submitting_proposals = self.element.get_date_of_the_procedure_for_submitting_proposals()
+            self.ktru_blocks = self.element.process_ktru_blocks()
+            self.ktru_sum_cost = self.element.get_ktru_sum_cost()
+            self.email = self.element.get_email()
+            self.phone_number = self.element.get_phone_number()
+            self.purchase_supplier_results = self.element.get_purchase_supplier_results(
+                self.purchase_supplier_results_page)
+            self.ru_numbers = self.element.get_ru_numbers(self.documents_results_page)
+            # TODO: действительно ли purchase_supplier_results много блоков может быть? Имеет ли смысл словарь делать?
+            self.provider = self.element.get_provider(self.purchase_supplier_results_page)
+            # TODO: проверить таки, почему победитель не парсится
+        except IndexError:
+            logger.critical('Нет номера закупки')
+            self.purchase_number = None
 
     def get_purchase_supplier_results_page(self, link):
         if not self.check_element_existing(PurchasePageLocators.a_results_of_determination_of_the_supplier, self.tree):
@@ -194,8 +200,3 @@ class HtmlElement(BasePage):
             return ''
         else:
             return purchase_supplier_results_page.get_provider()
-
-
-
-# test = PurchasePage('https://zakupki.gov.ru/epz/order/notice/ea20/view/common-info.html?regNumber=0188100001822000001', 'status')
-# test.get_page_elements()

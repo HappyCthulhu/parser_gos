@@ -35,6 +35,7 @@ def start_parse(search_params):
             purchases_count += 1
             logger.info(f'Страниц обработано: {purchases_count}/{len(page_numbers) * records_per_page}')
 
-            export.dump_data(purchase_page, purchases_count)
+            if purchase_page.purchase_number is not None:
+                export.dump_data(purchase_page, purchases_count)
 
     logger.info('Парсинг закончен')
