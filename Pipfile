@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+lxml = "*"
+loguru = "*"
+progress = "*"
+alive-progress = "*"
+openpyxl = "*"
+pyqt5 = "*"
+pyyaml = "*"
+python-docx = "*"
+requests = "*"
+docx = "*"
+aspose-words = "*"
+auto-py-to-exe = "*"
+pyinstaller = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
