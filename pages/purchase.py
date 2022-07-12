@@ -2,7 +2,9 @@ from locators import PurchasePageLocators
 from logger_settings import logger
 from pages.base_page import BasePage
 from pages.documents_results import DocumentsResults
+from pages.gispgov import GispGov
 from pages.purchase_supplier_results import PurchaseSupplierResults
+from pages.roszdrvnadzor import RoszDravNadzor
 
 
 class PurchasePage(BasePage):
@@ -15,7 +17,6 @@ class PurchasePage(BasePage):
             self.link)
         self.documents_results_page = self.get_documents_results_page(self.purchase_supplier_results_page)
 
-    # TODO: мб в init все перенести?
     def get_page_elements(self):
 
         try:
@@ -32,10 +33,13 @@ class PurchasePage(BasePage):
             self.phone_number = self.element.get_phone_number()
             self.purchase_supplier_results = self.element.get_purchase_supplier_results(
                 self.purchase_supplier_results_page)
-            self.ru_numbers = self.element.get_ru_numbers(self.documents_results_page)
             # TODO: действительно ли purchase_supplier_results много блоков может быть? Имеет ли смысл словарь делать?
             self.provider = self.element.get_provider(self.purchase_supplier_results_page)
-            # TODO: проверить таки, почему победитель не парсится
+            self.ru_numbers, self.registry_entry_numbers_numbers = self.element.get_ru_and_registry_entry_numbers_numbers(
+                self.documents_results_page)
+            self.ru_data = self.element.get_ru_data(self.ru_numbers)
+            self.registry_entry_data = self.element.get_registry_entry_data(self.registry_entry_numbers_numbers)
+
         except IndexError:
             logger.critical('Нет номера закупки')
             self.purchase_number = None
@@ -56,6 +60,7 @@ class PurchasePage(BasePage):
             return documents_results_page
 
 
+# TODO: мб вынести в отдельный файл
 class HtmlElement(BasePage):
     def __init__(self, tree):
         self.tree = tree
@@ -186,17 +191,25 @@ class HtmlElement(BasePage):
         else:
             return self.tree.xpath(PurchasePageLocators.email)[0].lstrip().rstrip()
 
-    def get_ru_numbers(self, documents_results_page):
+    def get_ru_and_registry_entry_numbers_numbers(self, documents_results_page):
         if documents_results_page:
-            ru_numbers = documents_results_page.get_ru_numbers()
+            ru_numbers = documents_results_page.get_ru_and_registry_entry_numbers_numbers()
             if ru_numbers:
                 logger.info(f'ru_numbers: {ru_numbers}')
             return ru_numbers
         else:
             return ''
 
+    def get_registry_entry_data(self, registry_entry_numbers):
+        page = GispGov(registry_entry_numbers)
+        return page.registry_entry_numbers_links
+
     def get_provider(self, purchase_supplier_results_page):
         if purchase_supplier_results_page == '':
             return ''
         else:
             return purchase_supplier_results_page.get_provider()
+
+    def get_ru_data(self, ru_numbers):
+        page = RoszDravNadzor(ru_numbers)
+        return page.ru_numbers_data
