@@ -1,17 +1,21 @@
 import requests
-
-from base_page import BasePage
+from pages.base_page import BasePage
 
 
 class GispGov(BasePage):
     def __init__(self, registry_entry_numbers: list):
-        self.registry_entry_numbers_links = {}
+        self.registry_entry_numbers_data = {}
         for number in registry_entry_numbers:
-            registry_entry_numbers_data = self.get_data(number)
-            needed_registry_entry_numbers_data = self.get_needed_registry_entry_numbers_data(
-                registry_entry_numbers_data['items'], number)
-            product_writeout_url = f'https://gisp.gov.ru/{needed_registry_entry_numbers_data["product_writeout_url"]}'
-            self.registry_entry_numbers_links[number] = {'link': product_writeout_url}
+            not_filtered_registry_entry_numbers_data: list = self.get_data(number)
+
+            if not_filtered_registry_entry_numbers_data:
+                needed_registry_entry_numbers_data = self.get_needed_registry_entry_numbers_data(
+                    not_filtered_registry_entry_numbers_data, number)
+
+                product_writeout_url = f'https://gisp.gov.ru/{needed_registry_entry_numbers_data["product_writeout_url"]}'
+                self.registry_entry_numbers_data[number] = {'link': product_writeout_url}
+            else:
+                self.registry_entry_numbers_data[number] = {'link': ''}
 
     def get_data(self, registry_entry_numbers):
         headers = {
@@ -30,7 +34,7 @@ class GispGov(BasePage):
 
         response = requests.post('https://gisp.gov.ru/pp719v2/pub/prod/b/', headers=headers, json=json_data)
 
-        return response.json()
+        return response.json().get('items')
 
     def get_needed_registry_entry_numbers_data(self, registry_entry_numbers_data, registry_entry_numbers):
         for elem in registry_entry_numbers_data:
