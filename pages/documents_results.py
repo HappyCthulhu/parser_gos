@@ -41,7 +41,6 @@ class DocumentsResults(BasePage):
 
         return fname
 
-
     def get_contract_file(self, doc_block_tree):
         if not self.check_element_existing(DocumentsResultsLocators.a_contract_file, doc_block_tree):
             return ''
@@ -49,39 +48,66 @@ class DocumentsResults(BasePage):
             status = doc_block_tree.xpath(DocumentsResultsLocators.a_contract_file)[0].lstrip().rstrip()
         return status
 
-    def get_ru_from_table(self, table_rows):
-        ru = []
-        for row in table_rows:
-            for cell in row.cells:
-                text = cell.text
-                if 'Номер регистрационного удостоверения' in text:
-                    text = text.split('Номер регистрационного удостоверения: ')[1].lstrip().rstrip()
-                    if text not in ru:
-                        ru.append(text)
-                else:
-                    text = text.split('/')
-                    # проверяем, что символы по обе стороны от слеша являются цифрами
-                    if len(text) == 2:
-                        if text[0][-1].isdigit() and text[1][0].isdigit():
-                            ru.append(''.join(text))
+    def get_ru_from_table(self, document):
+        table_with_ru = self.find_table_with_ru(document.tables)
 
-        return ru
+        if table_with_ru:
+            ru = []
 
-    def find_specification_table(self, tables):
+            for row in table_with_ru.rows:
+                for cell in row.cells:
+                    text = cell.text
+                    if re.search(r'[2]0[0-2][0-9]/', text):
+                        year = re.findall(r'[2]0[0-2][0-9]', text)[0]
+                        remainder = text.split(f'{year}/')[1].split()[0]
+                        ru.append(f'{year}/{remainder}')
+
+            uniq_ru = list(set(ru))
+            return uniq_ru
+
+        else:
+            return []
+
+    def get_registry_entry_numbers_from_table(self, document):
+
+        table_with_registry_entry_numbers = self.find_table_with_registry_entry_numbers(
+            document.tables)
+
+        if table_with_registry_entry_numbers:
+            registry_entry_numbers = []
+
+            for row in table_with_registry_entry_numbers.rows:
+                for cell in row.cells:
+                    text = rf'{cell.text}'
+
+                    if re.search(r'\d*\\\d*\\[2]0[0-2][0-9]', text):
+                        registry_entry_numbers.append(re.findall(r'\d*\\\d*\\[2]0[0-2][0-9]', text)[0])
+
+            uniq_registry_entry_numbers = list(set(registry_entry_numbers))
+            return uniq_registry_entry_numbers
+
+        else:
+            return []
+
+    def find_table_with_ru(self, tables):
         for table in tables:
             for row in table.rows:
                 for cell in row.cells:
                     text = cell.text
-                    if '№ п/п' in text:
-                        return table
-                    elif 'Номер регистрационного удостоверения' in text:
-                        return table
-                    text = text.split('/')
-                    # проверяем, что символы по обе стороны от слеша являются цифрами
-                    if len(text) == 2:
-                        if text[0][-1].isdigit() and text[1][-1].isdigit():
-                            return table
 
+                    if re.search(r'[2]0[0-2][0-9]/', text):
+                        return table
+
+        return ''
+
+    def find_table_with_registry_entry_numbers(self, tables):
+        for table in tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    text = cell.text
+
+                    if re.search(r'\d*\\\d*\\[2]0[0-2][0-9]', text):
+                        return table
 
         return ''
 
@@ -108,7 +134,7 @@ class DocumentsResults(BasePage):
         else:
             return ''
 
-    def get_ru_numbers(self):
+    def get_ru_and_registry_entry_numbers(self):
         # TODO: возможно в будущем окажется, что может быть несколько документов. Нужно будет перепилить
         status = self.get_status()
 
@@ -122,19 +148,11 @@ class DocumentsResults(BasePage):
                     doc_name = self.download_doc(doc_link)
                     try:
                         document = Document(doc_name)
-                        specification_table = self.find_specification_table(document.tables)
-                        if specification_table:
-                            ru = self.get_ru_from_table(specification_table.rows)
-                            return ru
+
+                        ru = self.get_ru_from_table(document)
+                        registry_entry_numbers = self.get_registry_entry_numbers_from_table(document)
+
+                        return ru, registry_entry_numbers
                     except ValueError:
                         logger.info('Error, related to .doc file. Skip oppening')
-                        ru = []
-                        return ru
-                    else:
-                        return []
-
-                else:
-                    self.ru_number = []
-        else:
-            return []
-
+        return [], []
