@@ -5,11 +5,11 @@ from logger_settings import logger
 
 
 class BasePage():
-    def get_tree(self, link, params=None):
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
-        }
-
+    def get_tree(self, link, params=None, headers=None):
+        if headers is None:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            }
         response = requests.get(link, params=params,
                                 headers=headers)
 
