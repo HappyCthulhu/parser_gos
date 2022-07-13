@@ -67,27 +67,46 @@ class Export:
         self.sheet[f'O2'].value = 'Поставщик'
         self.sheet.column_dimensions['P'].width = 15
         self.sheet[f'P2'].value = 'Сумма по аукциону'
+        self.sheet.column_dimensions['Q'].width = 10
         self.sheet[f'Q2'].value = 'Сумма контракта'
         self.sheet[f'R2'].value = 'Производитель товара'
         self.sheet[f'S2'].value = 'Страна происхождения'
+        self.sheet.column_dimensions['T'].width = 12
         self.sheet[f'T2'].value = 'Номер РУ'
+        self.sheet.column_dimensions['U'].width = 90
         self.sheet[f'U2'].value = 'Ссылка на РУ'
+        self.sheet.column_dimensions['V'].width = 10
         self.sheet[f'V2'].value = 'Срок действия РУ'
+        self.sheet.column_dimensions['W'].width = 13
         self.sheet[f'W2'].value = '№ Реестровой записи'
+        self.sheet.column_dimensions['X'].width = 60
         self.sheet[f'X2'].value = 'Ссылка на выписку из реестра МинПромТорга'
         self.sheet[f'Y2'].value = 'Файлы'
         self.sheet[f'Z2'].value = 'Упоминание'
+        self.sheet.column_dimensions['AA'].width = 15
         self.sheet[f'AA2'].value = 'Почта'
         self.sheet[f'AB2'].value = 'Телефон'
         self.sheet.column_dimensions['AB'].width = 15
 
         self.wb.save(filename=Path('result data', self.f_name))
 
-    def dump_ru_numbers(self, row):
+    def dump_ru_data(self, row):
         if self.purchase_page.ru_numbers:
             for number in self.purchase_page.ru_numbers:
                 if number:
-                    self.sheet[f'U{row}'].value = number
+                    self.sheet[f'T{row}'].value = number
+                    self.sheet[f'U{row}'].value = self.purchase_page.ru_data[number]['download_link']
+                    self.sheet[f'V{row}'].value = self.purchase_page.ru_data[number]['the_term_of_the_certificate']
+                    self.set_styles(row, self.column_border)
+
+                row += 1
+
+    def dump_registry_entry_data(self, row):
+        if self.purchase_page.registry_entry_numbers_numbers:
+            for registry_number in self.purchase_page.registry_entry_numbers_numbers:
+                if registry_number:
+                    self.sheet[f'W{row}'].value = registry_number
+                    self.sheet[f'X{row}'].value = self.purchase_page.registry_entry_data[registry_number]['link']
                     self.set_styles(row, self.column_border)
 
                 row += 1
@@ -147,8 +166,10 @@ class Export:
         self.sheet[f'O{row}'].value = purchase_page.provider
 
         self.dump_ktru(row)
-        self.dump_ru_numbers(row)
         self.dump_purchase_supplier_results(row)
+
+        self.dump_ru_data(row)
+        self.dump_registry_entry_data(row)
 
         self.set_styles(row, self.column_border)
         self.wb.save(filename=Path('result data', self.f_name))
