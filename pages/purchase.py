@@ -35,7 +35,7 @@ class PurchasePage(BasePage):
                 self.purchase_supplier_results_page)
             # TODO: действительно ли purchase_supplier_results много блоков может быть? Имеет ли смысл словарь делать?
             self.provider = self.element.get_provider(self.purchase_supplier_results_page)
-            self.ru_numbers, self.registry_entry_numbers_numbers = self.element.get_ru_and_registry_entry_numbers_numbers(
+            self.ru_numbers, self.registry_entry_numbers_numbers = self.element.get_ru_and_registry_entry_numbers(
                 self.documents_results_page)
             self.ru_data = self.element.get_ru_data(self.ru_numbers)
             self.registry_entry_data = self.element.get_registry_entry_data(self.registry_entry_numbers_numbers)
@@ -191,18 +191,13 @@ class HtmlElement(BasePage):
         else:
             return self.tree.xpath(PurchasePageLocators.email)[0].lstrip().rstrip()
 
-    def get_ru_and_registry_entry_numbers_numbers(self, documents_results_page):
+    def get_ru_and_registry_entry_numbers(self, documents_results_page):
         if documents_results_page:
-            ru_numbers = documents_results_page.get_ru_and_registry_entry_numbers_numbers()
-            if ru_numbers:
-                logger.info(f'ru_numbers: {ru_numbers}')
-            return ru_numbers
-        else:
-            return ''
+            ru_and_registry_entry_numbers = documents_results_page.get_ru_and_registry_entry_numbers()
+            if ru_and_registry_entry_numbers:
+                return ru_and_registry_entry_numbers
 
-    def get_registry_entry_data(self, registry_entry_numbers):
-        page = GispGov(registry_entry_numbers)
-        return page.registry_entry_numbers_links
+        return ('', '')
 
     def get_provider(self, purchase_supplier_results_page):
         if purchase_supplier_results_page == '':
@@ -211,5 +206,17 @@ class HtmlElement(BasePage):
             return purchase_supplier_results_page.get_provider()
 
     def get_ru_data(self, ru_numbers):
-        page = RoszDravNadzor(ru_numbers)
-        return page.ru_numbers_data
+        if ru_numbers:
+            page = RoszDravNadzor(ru_numbers)
+            ru_numbers_data = page.ru_numbers_data
+        else:
+            ru_numbers_data = {}
+        return ru_numbers_data
+
+    def get_registry_entry_data(self, registry_entry_numbers):
+        if registry_entry_numbers:
+            page = GispGov(registry_entry_numbers)
+            registry_entry_numbers_links = page.registry_entry_numbers_data
+        else:
+            registry_entry_numbers_links = {}
+        return registry_entry_numbers_links
