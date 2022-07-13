@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from base_page import BasePage
+from pages.base_page import BasePage
 from logger_settings import logger
 
 
