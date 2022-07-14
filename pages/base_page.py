@@ -1,6 +1,7 @@
 import requests
 from lxml import html
 
+import time
 from logger_settings import logger
 
 
@@ -10,15 +11,42 @@ class BasePage():
             headers = {
                 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
             }
-        response = requests.get(link, params=params,
-                                headers=headers)
+        response = ''
+        start_time = time.time()
+        finish_time = time.time()
+        time_spent = finish_time - start_time
+        while not response and time_spent < 30:
+            try:
+                response = requests.get(link, params=params,
+                                        headers=headers)
 
-        if response.status_code != 200:
-            # TODO: попробовать достать функцию, которая вызывает этот класс
-            logger.critical(f'Статус страницы закупки: {response.status_code}\n'
-                            f'Ссылка запроса: {link}\n'
-                            f'Параметры: {params}\n'
-                            f'Заголовки: {headers}\n')
+                if response.status_code != 200:
+                    # TODO: попробовать достать функцию, которая вызывает этот класс
+                    logger.critical(f'Статус страницы закупки: {response.status_code}\n'
+                                    f'Ссылка запроса: {link}\n'
+                                    f'Параметры: {params}\n'
+                                    f'Заголовки: {headers}\n')
+                    response = None
+                    finish_time = time.time()
+                    time_spent = finish_time - start_time
+            except Exception as e:
+                logger.critical(f'Faced weird error. I will try to get tree one more time\n'
+                                f'Статус страницы закупки: {response.status_code}\n'
+                                f'Ссылка запроса: {link}\n'
+                                f'Параметры: {params}\n'
+                                f'Заголовки: {headers}\n')
+
+        if not response:
+            logger.critical(f'I`m done. To many attemps')
+            return None
+
+        try:
+            status_code = response.status_code
+            if status_code != 200:
+                logger.debug(f'Статус: {status_code}\n')
+        except BaseException:
+            logger.critical('Cant get status code')
+
 
         return html.document_fromstring(response.text)
 
@@ -34,4 +62,3 @@ class BasePage():
             return False
         else:
             return True
-
