@@ -34,7 +34,7 @@ class PurchasePage(BasePage):
             self.purchase_supplier_results = self.element.get_purchase_supplier_results(
                 self.purchase_supplier_results_page)
             # TODO: действительно ли purchase_supplier_results много блоков может быть? Имеет ли смысл словарь делать?
-            self.provider = self.element.get_provider(self.purchase_supplier_results_page)
+            # self.provider = self.element.get_provider(self.purchase_supplier_results_page)
             self.ru_numbers, self.registry_entry_numbers_numbers = self.element.get_ru_and_registry_entry_numbers(
                 self.documents_results_page)
             self.ru_data = self.element.get_ru_data(self.ru_numbers)
@@ -199,11 +199,13 @@ class HtmlElement(BasePage):
 
         return ('', '')
 
-    def get_provider(self, purchase_supplier_results_page):
-        if purchase_supplier_results_page == '':
-            return ''
-        else:
-            return purchase_supplier_results_page.get_provider()
+    # TODO: а это что делает? мб я это добавил, потому что не помнил, каким образом provide подсасывается?
+
+    # def get_provider(self, purchase_supplier_results_page):
+    #     if purchase_supplier_results_page == '':
+    #         return ''
+    #     else:
+    #         return purchase_supplier_results_page.get_provider()
 
     def get_ru_data(self, ru_numbers):
         if ru_numbers:
