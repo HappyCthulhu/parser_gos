@@ -6,6 +6,7 @@ from docx.api import Document
 from locators import PurchaseSupplierResultsLocators, DocumentsResultsLocators
 from logger_settings import logger
 from pages.base_page import BasePage
+from requests.exceptions import ChunkedEncodingError
 
 
 class DocumentsResults(BasePage):
@@ -125,15 +126,38 @@ class DocumentsResults(BasePage):
     def get_doc_block_tree(self):
         draft_id = self.get_draft_id()
         if draft_id:
+            link = 'https://zakupki.gov.ru/epz/order/notice/rpec/documents-results.html'
 
-            tree = self.get_tree(
-                # разворачиваем часть страницы "Информация о процедуре заключения контракта"
-                'https://zakupki.gov.ru/epz/order/notice/rpec/documents-results.html',
-                {'orderNum': self.order_num,
-                 'draftId': draft_id  # idшник документа, судя во всему. Без него возвращает 404
-                 }
-            )
-            return tree
+            try:
+                tree = self.get_tree(
+                    # разворачиваем часть страницы "Информация о процедуре заключения контракта"
+                    link,
+                    {'orderNum': self.order_num,
+                     'draftId': draft_id  # idшник документа, судя во всему. Без него возвращает 404
+                     }
+                )
+
+                return tree
+            except ChunkedEncodingError:
+                logger.critical('Faced weird ChunkedEncodingError. I will try to get tree one more time \n'
+                                f'order_num: {self.order_num}\n'
+                                f'draft_id: {draft_id}\n'
+                                f'link: {link}')
+                try:
+                    tree = self.get_tree(
+                        # разворачиваем часть страницы "Информация о процедуре заключения контракта"
+                        link,
+                        {'orderNum': self.order_num,
+                         'draftId': draft_id  # idшник документа, судя во всему. Без него возвращает 404
+                         }
+                    )
+
+                    return tree
+
+                except ChunkedEncodingError:
+                    logger.critical('That didnt work. Still getting ChunkedEncodingError')
+                    return ''
+
         else:
             return ''
 
