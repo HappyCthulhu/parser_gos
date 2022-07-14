@@ -30,6 +30,17 @@ class PurchaseSupplierResults(BasePage):
         else:
             return tree.xpath(PurchaseSupplierResultsLocators.contract_price)[0].lstrip().rstrip()
 
+    def check_status(self, tree):
+        if not self.check_element_existing(PurchaseSupplierResultsLocators.contract_price, tree):
+            return False
+        else:
+            status = tree.xpath(PurchaseSupplierResultsLocators.status)[0].lstrip().rstrip()
+
+            if status == 'Контракт заключен':
+                return True
+            else:
+                return False
+
     def get_contracts_info(self):
         contracts_blocks = self.get_contracts_blocks()
         contracts = []
@@ -38,13 +49,19 @@ class PurchaseSupplierResults(BasePage):
 
             for block in contracts_blocks:
                 conclution_block_tree = self.from_lxml_to_html_to_lxml(block)
-                provider = self.get_provider(conclution_block_tree)
-                contract_price = self.get_contract_price(conclution_block_tree)
+                if self.check_status(conclution_block_tree):
+                    provider = self.get_provider(conclution_block_tree)
+                    contract_price = self.get_contract_price(conclution_block_tree)
+                # else:
+                    # TODO: понять, каким образом экспорт чекает на наличие инфы. Что происходит, когда контракт не найден?
+                    # TODO: продумать более прозрачную лоигку поиска контрактов. А то сейчас у меня в purchase_supplier_results это оказывается в результате...
+                    # provider = ''
+                    # contract_price = ''
 
-                contracts.append(
-                    {
-                        'provider': provider,
-                        'contract_price': contract_price
-                    }
-                )
+                    contracts.append(
+                        {
+                            'provider': provider,
+                            'contract_price': contract_price
+                        }
+                    )
         return contracts
