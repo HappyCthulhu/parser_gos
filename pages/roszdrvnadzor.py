@@ -15,9 +15,6 @@ class RoszDravNadzor(BasePage):
             if ru_data:
                 ru_data[ru_number]['download_link'] = self.get_download_link(ru_data)
                 self.ru_numbers_data.update(ru_data)
-            else:
-                ru_data[ru_number] = {'download_link': ''}
-
 
     def get_data(self, ru: str):
 
@@ -96,7 +93,6 @@ class RoszDravNadzor(BasePage):
 
             tree = self.get_tree('https://roszdravnadzor.gov.ru/services/misearch', params=params, headers=headers)
 
-            # TODO; вынести xpath в файл локаторов?
             if self.check_element_existing('//a[@title="скачать РУ"]/@href', tree):
                 link_part = tree.xpath('//a[@title="скачать РУ"]/@href')[0]
                 return f'https://roszdravnadzor.gov.ru/services/misearch{link_part}'

@@ -18,17 +18,17 @@ class PurchaseSupplierResults(BasePage):
         return self.tree.xpath(
             PurchasePageLocators.blocks_information_about_the_conclusion_of_the_contract)
 
-    def get_provider(self, tree):
-        if not self.check_element_existing(PurchaseSupplierResultsLocators.provider, tree):
+    def get_provider(self):
+        if not self.check_element_existing(PurchaseSupplierResultsLocators.provider, self.tree):
             return ''
         else:
-            return tree.xpath(PurchaseSupplierResultsLocators.provider)[0].lstrip().rstrip()
+            return self.tree.xpath(PurchaseSupplierResultsLocators.provider)[0].lstrip().rstrip()
 
-    def get_contract_price(self, tree):
-        if not self.check_element_existing(PurchaseSupplierResultsLocators.contract_price, tree):
+    def get_contract_price(self):
+        if not self.check_element_existing(PurchaseSupplierResultsLocators.contract_price, self.tree):
             return ''
         else:
-            return tree.xpath(PurchaseSupplierResultsLocators.contract_price)[0].lstrip().rstrip()
+            return self.tree.xpath(PurchaseSupplierResultsLocators.contract_price)[0].lstrip().rstrip()
 
     def get_contracts_info(self):
         contracts_blocks = self.get_contracts_blocks()
@@ -37,9 +37,9 @@ class PurchaseSupplierResults(BasePage):
         if len(contracts_blocks) != 0:
 
             for block in contracts_blocks:
-                conclution_block_tree = self.from_lxml_to_html_to_lxml(block)
-                provider = self.get_provider(conclution_block_tree)
-                contract_price = self.get_contract_price(conclution_block_tree)
+                self.conclution_block_tree = self.from_lxml_to_html_to_lxml(block)
+                provider = self.get_provider()
+                contract_price = self.get_contract_price()
 
                 contracts.append(
                     {
@@ -47,4 +47,5 @@ class PurchaseSupplierResults(BasePage):
                         'contract_price': contract_price
                     }
                 )
+
         return contracts
