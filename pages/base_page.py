@@ -15,10 +15,10 @@ class BasePage():
 
         if response.status_code != 200:
             # TODO: попробовать достать функцию, которая вызывает этот класс
-            logger.critical(f'Статус страницы закупки: {response.status_code}'
-                            f'Ссылка запроса: {link}'
-                            f'Параметры: {params}'
-                            f'Заголовки: {headers}')
+            logger.critical(f'Статус страницы закупки: {response.status_code}\n'
+                            f'Ссылка запроса: {link}\n'
+                            f'Параметры: {params}\n'
+                            f'Заголовки: {headers}\n')
 
         return html.document_fromstring(response.text)
 
