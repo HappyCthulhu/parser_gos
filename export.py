@@ -64,10 +64,11 @@ class Export:
         self.sheet[f'L2'].value = 'Количество товара'
         self.sheet[f'M2'].value = 'Список участников'
         self.sheet[f'N2'].value = 'Сумма в заявке'
+        self.sheet.column_dimensions['O'].width = 40
         self.sheet[f'O2'].value = 'Поставщик'
         self.sheet.column_dimensions['P'].width = 15
         self.sheet[f'P2'].value = 'Сумма по аукциону'
-        self.sheet.column_dimensions['Q'].width = 10
+        self.sheet.column_dimensions['Q'].width = 12
         self.sheet[f'Q2'].value = 'Сумма контракта'
         self.sheet[f'R2'].value = 'Производитель товара'
         self.sheet[f'S2'].value = 'Страна происхождения'
@@ -95,9 +96,10 @@ class Export:
             for number in self.purchase_page.ru_numbers:
                 if number:
                     self.sheet[f'T{row}'].value = number
-                    self.sheet[f'U{row}'].value = self.purchase_page.ru_data[number]['download_link']
-                    self.sheet[f'V{row}'].value = self.purchase_page.ru_data[number]['the_term_of_the_certificate']
-                    self.set_styles(row, self.column_border)
+                    if self.purchase_page.ru_data.get(number):
+                        self.sheet[f'U{row}'].value = self.purchase_page.ru_data[number]['download_link']
+                        self.sheet[f'V{row}'].value = self.purchase_page.ru_data[number]['the_term_of_the_certificate']
+                        self.set_styles(row, self.column_border)
 
                 row += 1
 
@@ -163,7 +165,6 @@ class Export:
         self.sheet[f'AA{row}'].value = purchase_page.email
         self.sheet[f'AB{row}'].value = purchase_page.phone_number
         # TODO: что с поставщиком? Чем отличается от списка участников? Решил, что списка участников не будет прост)0)00)
-        self.sheet[f'O{row}'].value = purchase_page.provider
 
         self.dump_ktru(row)
         self.dump_purchase_supplier_results(row)
