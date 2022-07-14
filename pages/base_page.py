@@ -29,7 +29,7 @@ class BasePage():
                     response = None
                     finish_time = time.time()
                     time_spent = finish_time - start_time
-            except Exception as e:
+            except BaseException as e:
                 print(e)
                 logger.critical(f'Faced weird error. I will try to get tree one more time\n'
                                 f'Статус страницы закупки: {response}\n'
