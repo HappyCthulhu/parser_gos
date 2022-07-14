@@ -26,20 +26,23 @@ class DocumentsResults(BasePage):
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
         }
         response = requests.get(url, allow_redirects=True, headers=headers)
-        fname = re.findall("filename=(.+)", response.headers['content-disposition'])[0]
+        fname = re.findall("filename=(.+)", response.headers['content-disposition'])[0].lower()
         if '.docx' in fname:
             fname = "doc.docx"
+            # TODO: статичный путь сделать
+            with open(fname, "wb") as file:
+                file.write(response.content)
+                return fname
+
         elif '.doc' in fname:
-            fname = "doc.doc"
-            logger.debug('.doc format')
+            logger.info('".doc" format. Skip oppening')
+        elif '.rar' in fname or '.zip' in fname:
+            logger.debug('Archive. Skipping')
         else:
             logger.critical(f"Неизвестный формат файла:{fname}")
 
-        # TODO: статичный путь сделать
-        with open(fname, "wb") as file:
-            file.write(response.content)
+        return None
 
-        return fname
 
     def get_contract_file(self, doc_block_tree):
         if not self.check_element_existing(DocumentsResultsLocators.a_contract_file, doc_block_tree):
@@ -146,13 +149,19 @@ class DocumentsResults(BasePage):
                 doc_link = self.get_contract_file(doc_block_tree)
                 if doc_link:
                     doc_name = self.download_doc(doc_link)
-                    try:
-                        document = Document(doc_name)
+                    if doc_name:
+                        try:
+                            document = Document(doc_name)
 
-                        ru = self.get_ru_from_table(document)
-                        registry_entry_numbers = self.get_registry_entry_numbers_from_table(document)
+                            ru = self.get_ru_from_table(document)
+                            registry_entry_numbers = self.get_registry_entry_numbers_from_table(document)
 
-                        return ru, registry_entry_numbers
-                    except ValueError:
-                        logger.info('Error, related to .doc file. Skip oppening')
+                            return ru, registry_entry_numbers
+
+                        # пример ошибки:
+                        # ValueError: file 'doc.docx' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+                        # закупка, ее вызвавшая: https://zakupki.gov.ru/epz/order/notice/ea20/view/supplier-results.html?regNumber=0351100025322000002
+                        except ValueError:
+                            return [], []
+
         return [], []

@@ -3,11 +3,13 @@ from locators import MainPageLocators
 from pages.base_page import BasePage
 
 
+# TODO: убрать из подобных классов часть "Page"
 class PurchaseSearchPage(BasePage):
     def __init__(self, main_link, link_params: dict):
         self.link = self.create_link(main_link, link_params)
         self.tree = self.get_tree(self.link)
         self.purchases = self.get_purchases()
+
 
     @staticmethod
     def create_link(main_link, link_params):
@@ -41,7 +43,10 @@ class PurchaseSearchPage(BasePage):
         return link
 
     def find_number_of_pages(self):
-        pages_count = int(self.tree.xpath(MainPageLocators.text_pages_number)[-1])
+        if not self.check_element_existing(MainPageLocators.text_pages_number, self.tree):
+            return 1
+        else:
+            pages_count = int(self.tree.xpath(MainPageLocators.text_pages_number)[-1])
         return pages_count
 
     def get_purchases(self):

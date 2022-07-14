@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'untitled_bac.ui'
-#jC
+# jC
 # Created by: PyQt5 UI code generator 5.15.6
 #
 # WARNING: Any manual changes made to this file will be lost when pyuic5 is
