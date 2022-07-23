@@ -3,7 +3,7 @@ import traceback
 from pathlib import Path
 
 from loguru import logger as loguru_logger
-
+from datetime import datetime
 
 def set_logger():
     loguru_logger.remove()
@@ -39,7 +39,8 @@ def my_exception_hook(type, value, tb):
     error_msg = "Непредсказуемая ошибка:\n" \
                 f"Type: {type}\n" \
                 f"Value: {value}\n" \
-                f"Traceback: {traceback_details}" \
+                f"Traceback: {traceback_details}\n" \
+                f"Time: {datetime.now()}\n" \
                 f"______________________________\n"
 
     logger.info('Парсинг закончен')
