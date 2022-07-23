@@ -2,11 +2,11 @@ import re
 
 import requests
 from docx.api import Document
+from docx.opc.exceptions import PackageNotFoundError
 
 from locators import PurchaseSupplierResultsLocators, DocumentsResultsLocators
 from logger_settings import logger
 from pages.base_page import BasePage
-from requests.exceptions import ChunkedEncodingError
 
 
 class DocumentsResults(BasePage):
@@ -22,28 +22,60 @@ class DocumentsResults(BasePage):
             status = self.purchase_search_page_tree.xpath(PurchaseSupplierResultsLocators.status)[0].lstrip().rstrip()
         return status
 
+    def convert_doc_in_docx(self, response_content):
+        doc_fname = 'doc.doc'
+        with open(doc_fname, "wb") as file:
+            file.write(response_content)
+
+        url = "https://products.aspose.com/words/python-net/conversion/runcode/?outputType=docx"
+
+        payload = {}
+        files = [
+            (
+                '', (doc_fname, open(doc_fname, 'rb'), 'application/msword'))
+        ]
+
+        response = requests.request("POST", url, data=payload, files=files)
+
+        docx_fname = 'doc.docx'
+
+        with open(docx_fname, "wb") as file:
+            file.write(response.content)
+
+        return docx_fname
+
     def download_doc(self, url):
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
         }
         response = requests.get(url, allow_redirects=True, headers=headers)
         fname = re.findall("filename=(.+)", response.headers['content-disposition'])[0].lower()
+
         if '.docx' in fname:
             fname = "doc.docx"
-            # TODO: статичный путь сделать
             with open(fname, "wb") as file:
                 file.write(response.content)
                 return fname
 
         elif '.doc' in fname:
-            logger.info('".doc" format. Skip oppening')
+            fname = 'doc.doc'
+            with open(fname, "wb") as file:
+                file.write(response.content)
+
+            try:
+                Document(fname)
+            except (ValueError, PackageNotFoundError) as e:
+                logger.debug('Converting doc to docx')
+                fname = self.convert_doc_in_docx(response.content)
+
+            return fname
+
         elif '.rar' in fname or '.zip' in fname:
             logger.debug('Archive. Skipping')
         else:
             logger.critical(f"Неизвестный формат файла:{fname}")
 
         return None
-
 
     def get_contract_file(self, doc_block_tree):
         if not self.check_element_existing(DocumentsResultsLocators.a_contract_file, doc_block_tree):
@@ -127,7 +159,6 @@ class DocumentsResults(BasePage):
         draft_id = self.get_draft_id()
         if draft_id:
 
-
             tree = self.get_tree(
                 # разворачиваем часть страницы "Информация о процедуре заключения контракта"
                 'https://zakupki.gov.ru/epz/order/notice/rpec/documents-results.html',
@@ -153,18 +184,12 @@ class DocumentsResults(BasePage):
                 if doc_link:
                     doc_name = self.download_doc(doc_link)
                     if doc_name:
-                        try:
-                            document = Document(doc_name)
+                        document = Document(doc_name)
 
-                            ru = self.get_ru_from_table(document)
-                            registry_entry_numbers = self.get_registry_entry_numbers_from_table(document)
+                        ru = self.get_ru_from_table(document)
+                        registry_entry_numbers = self.get_registry_entry_numbers_from_table(document)
 
-                            return ru, registry_entry_numbers
+                        return ru, registry_entry_numbers
 
-                        # пример ошибки:
-                        # ValueError: file 'doc.docx' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
-                        # закупка, ее вызвавшая: https://zakupki.gov.ru/epz/order/notice/ea20/view/supplier-results.html?regNumber=0351100025322000002
-                        except ValueError:
-                            return [], []
 
         return [], []
