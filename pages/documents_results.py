@@ -36,6 +36,11 @@ class DocumentsResults(BasePage):
         ]
 
         response = requests.request("POST", url, data=payload, files=files)
+        
+        if response.status_code != 200:
+            logger.critical(f"Ошибка при конвертации в docx: {response.status_code}\n"
+                            f"{response.text}")
+            return None
 
         docx_fname = 'doc.docx'
 
@@ -65,8 +70,13 @@ class DocumentsResults(BasePage):
             try:
                 Document(fname)
             except (ValueError, PackageNotFoundError) as e:
-                logger.debug('Converting doc to docx')
+                
+                logger.debug('Converting doc to docx\n'
+                             f'{e.__class__.__name__}: {e}')
                 fname = self.convert_doc_in_docx(response.content)
+
+            if fname is  None:
+                return None
 
             return fname
 
