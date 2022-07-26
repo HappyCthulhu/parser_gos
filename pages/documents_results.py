@@ -69,7 +69,7 @@ class DocumentsResults(BasePage):
 
             try:
                 Document(fname)
-            except (ValueError, PackageNotFoundError) as e:
+            except (ValueError, PackageNotFoundError, KeyError) as e:
                 
                 logger.debug('Converting doc to docx\n'
                              f'{e.__class__.__name__}: {e}')
