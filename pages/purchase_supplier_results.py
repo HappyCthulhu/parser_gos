@@ -36,7 +36,7 @@ class PurchaseSupplierResults(BasePage):
         else:
             status = tree.xpath(PurchaseSupplierResultsLocators.status)[0].lstrip().rstrip()
 
-            if status == 'Контракт заключен':
+            if status == 'Контракт заключен' or status == 'Подписание поставщиком' or status == 'Подписание заказчиком':
                 return True
             else:
                 return False
