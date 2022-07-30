@@ -18,17 +18,24 @@ class PurchaseSupplierResults(BasePage):
         return self.tree.xpath(
             PurchasePageLocators.blocks_information_about_the_conclusion_of_the_contract)
 
-    def get_provider(self, tree):
-        if not self.check_element_existing(PurchaseSupplierResultsLocators.provider, tree):
+    def get_supplier(self, tree):
+        if not self.check_element_existing(PurchaseSupplierResultsLocators.supplier, tree):
             return ''
         else:
-            return tree.xpath(PurchaseSupplierResultsLocators.provider)[0].lstrip().rstrip()
+            return tree.xpath(PurchaseSupplierResultsLocators.supplier)[0].lstrip().rstrip()
 
     def get_contract_price(self, tree):
         if not self.check_element_existing(PurchaseSupplierResultsLocators.contract_price, tree):
             return ''
         else:
             return tree.xpath(PurchaseSupplierResultsLocators.contract_price)[0].lstrip().rstrip()
+
+    def get_customer(self, tree):
+        if not self.check_element_existing(PurchaseSupplierResultsLocators.customer, tree):
+            return ''
+        else:
+            return tree.xpath(PurchaseSupplierResultsLocators.customer)[0].lstrip().rstrip()
+
 
     def check_status(self, tree):
         if not self.check_element_existing(PurchaseSupplierResultsLocators.contract_price, tree):
@@ -50,8 +57,9 @@ class PurchaseSupplierResults(BasePage):
             for block in contracts_blocks:
                 conclution_block_tree = self.from_lxml_to_html_to_lxml(block)
                 if self.check_status(conclution_block_tree):
-                    provider = self.get_provider(conclution_block_tree)
+                    supplier = self.get_supplier(conclution_block_tree)
                     contract_price = self.get_contract_price(conclution_block_tree)
+                    customer = self.get_customer(conclution_block_tree)
                 # else:
                     # TODO: понять, каким образом экспорт чекает на наличие инфы. Что происходит, когда контракт не найден?
                     # TODO: продумать более прозрачную лоигку поиска контрактов. А то сейчас у меня в purchase_supplier_results это оказывается в результате...
@@ -60,8 +68,9 @@ class PurchaseSupplierResults(BasePage):
 
                     contracts.append(
                         {
-                            'provider': provider,
-                            'contract_price': contract_price
+                            'supplier': supplier,
+                            'contract_price': contract_price,
+                            'customer': customer
                         }
                     )
         return contracts

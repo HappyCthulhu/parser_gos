@@ -21,7 +21,7 @@ class PurchasePage(BasePage):
 
         try:
             self.purchase_number = self.element.get_purchase_number(self.link)
-            self.customer = self.element.get_customer()
+            self.customer = self.element.get_customer() # заказчик
             self.region = self.element.get_region()
             self.starting_price = self.element.get_starting_price()
             self.date_and_time_of_the_application_beginning = self.element.get_date_and_time_of_the_application_beginning()

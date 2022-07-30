@@ -29,12 +29,12 @@ class PurchasePageLocators:
     information_about_the_contract_closing_procedure = '//form[@id="searchDraftForm"]//tbody[@class="tableBlock__body"]/tr[@class="tableBlock__row"]'
 
 class PurchaseSupplierResultsLocators:
-    text_provider = '//tr/td[3]//text()'
+    # text_supplier = '//tr/td[3]//text()'
     status = '(//tr/td[4]//text())[1]'
     contract_price = '//tr/td[5]/text()'
-    provider = '//tr/td[3]/text()'
+    supplier = '//tr/td[3]/text()' # поставщик
     data_id_draft_id = '//tbody[@class="tableBlock__body"]/tr[@class="tableBlock__row"]/td/span/@data-id'
-
+    customer = '//tr/td[2]/text()' # заказчик
 class DocumentsResultsLocators:
     a_contract_file = '//a[contains(@href,"file.html")]/@href'
 

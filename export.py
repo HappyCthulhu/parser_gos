@@ -128,8 +128,10 @@ class Export:
         if self.purchase_page.purchase_supplier_results:
             for block in self.purchase_page.purchase_supplier_results:
                 self.set_styles(row, self.column_border)
-                self.sheet[f'O{row}'].value = block['provider']
+                self.sheet[f'O{row}'].value = block['supplier']
                 self.sheet[f'Q{row}'].value = block['contract_price']
+                if block['customer']:
+                    self.sheet[f'I{row}'].value = block['customer']
 
                 row += 1
 
