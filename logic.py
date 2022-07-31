@@ -29,26 +29,30 @@ def start_parse(search_params):
         search_page = PurchaseSearchPage(main_purchase_search_page_link, search_params)
 
         for count, purchase in enumerate(search_page.purchases):
-            # start = time.time()
+            try:
+                # start = time.time()
 
-            # берем номер страницы умножаем на 10, чтоб получить количество покупок. Вычитаем 10, ибо номер страницы начинается с 1. Прибавляем 1, ведь enumerate начинает с 0
+                # берем номер страницы умножаем на 10, чтоб получить количество покупок. Вычитаем 10, ибо номер страницы начинается с 1. Прибавляем 1, ведь enumerate начинает с 0
 
-            purchases_count = count + (page_number * records_per_page - records_per_page + 1)
-            status = search_page.get_status(purchase)
-            link = search_page.get_link_to_purchases(purchase)
-            purchase_page = PurchasePage(link, status)
-            purchase_page.get_page_elements()
+                purchases_count = count + (page_number * records_per_page - records_per_page + 1)
+                status = search_page.get_status(purchase)
+                link = search_page.get_link_to_purchases(purchase)
+                purchase_page = PurchasePage(link, status)
+                purchase_page.get_page_elements()
 
-            logger.info(f'Страниц обработано: {purchases_count}/{len(page_numbers) * records_per_page}')
+                logger.info(f'Страниц обработано: {purchases_count}/{len(page_numbers) * records_per_page}')
 
-            if purchase_page.purchase_number is not None:
-                export.dump_data(purchase_page, purchases_count)
+                if purchase_page.purchase_number is not None:
+                    export.dump_data(purchase_page, purchases_count)
 
-            # finish = time.time()
-            # time_spent_current_purchase = (finish - start) / purchases_count
-            # speed.append(time_spent_current_purchase)
-            # average_time = sum(map(float, speed))/len(speed)
-            # average_time = average_time
-            # logger.info('Время на одну закупку: {}'.format(average_time))
+                # finish = time.time()
+                # time_spent_current_purchase = (finish - start) / purchases_count
+                # speed.append(time_spent_current_purchase)
+                # average_time = sum(map(float, speed))/len(speed)
+                # average_time = average_time
+                # logger.info('Время на одну закупку: {}'.format(average_time))
+            except BaseException as e:
+                logger.critical(f'Непредсказуемая ошибка: \n{e.__class__.__name__}: {e}')
+
 
     logger.info('Парсинг закончен')
