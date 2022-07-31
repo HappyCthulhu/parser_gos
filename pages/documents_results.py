@@ -36,9 +36,9 @@ class DocumentsResults(BasePage):
         ]
 
         response = requests.request("POST", url, data=payload, files=files)
-        
+
         if response.status_code != 200:
-            logger.critical(f"Ошибка при конвертации в docx: {response.status_code}\n"
+            logger.critical(f"Ошибка при конвертации в docx через aspose: {response.status_code}\n"
                             f"{response.text}")
             return None
 
@@ -60,6 +60,7 @@ class DocumentsResults(BasePage):
             fname = "doc.docx"
             with open(fname, "wb") as file:
                 file.write(response.content)
+
                 return fname
 
         elif '.doc' in fname:
@@ -70,12 +71,12 @@ class DocumentsResults(BasePage):
             try:
                 Document(fname)
             except (ValueError, PackageNotFoundError, KeyError) as e:
-                
+
                 logger.debug('Converting doc to docx\n'
                              f'{e.__class__.__name__}: {e}')
                 fname = self.convert_doc_in_docx(response.content)
 
-            if fname is  None:
+            if fname is None:
                 return None
 
             return fname
@@ -200,6 +201,5 @@ class DocumentsResults(BasePage):
                         registry_entry_numbers = self.get_registry_entry_numbers_from_table(document)
 
                         return ru, registry_entry_numbers
-
 
         return [], []
