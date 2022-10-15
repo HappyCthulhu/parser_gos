@@ -73,13 +73,6 @@ class Reactions():
     def start(self):
         # TODO: добавить проверку на то, были ли найдены записи: //a[contains(text(),"№")]
 
-        print(check_access)
-        if check_access():
-            pass
-        else:
-            print('Sorry, this app cant run on your device')
-            sys.exit(app.exec_())
-
         self.link_params['search_string'] = self.ui.lineEdit.text()
         self.thread = ThreadClass(parent=None, index=1, link_params=self.link_params)
         self.thread.start()
